@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.cengonline.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,6 +27,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Arrays;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -34,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
 
     private FirebaseAuth firebaseAuth;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,11 +108,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-
-        if (currentUser != null) {
-            Log.d(TAG, "Currently Signed in: " + currentUser.getEmail());
-            showToastMessage("Currently Logged in: " + currentUser.getEmail());
-            launchMainActivity(currentUser);
+        if(currentUser != null){
+            setUserFromFirebaseUser(currentUser);
         }
     }
 
@@ -138,12 +147,12 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-                            Log.d(TAG, "signInWithCredential:success: currentUser: " + user.getEmail());
-
+                            Log.d(TAG, "signInWithCredential:success: currentUser: " + firebaseUser.getEmail());
+                            saveUserIfDoesNotExist(firebaseUser);
                             showToastMessage("Firebase Authentication Succeeded ");
-                            launchMainActivity(user);
+                            launchMainActivity(firebaseUser.getDisplayName());
                         } else {
                             // If sign in fails, display a message to the user.
 
@@ -159,16 +168,16 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
-    private void launchMainActivity(FirebaseUser user) {
-        if (user != null) {
-            MainActivity.startActivity(this, user.getDisplayName());
-            finish();
-        }
+    private void launchMainActivity(String username) {
+        MainActivity.startActivity(this, username);
+        finish();
+
     }
 
     private void launchRegisterActivity(){
 
         startActivity(new Intent(this, RegisterActivity.class));
+        finish();
     }
 
     private void signWithCredentials(){
@@ -193,9 +202,10 @@ public class LoginActivity extends AppCompatActivity {
                             showToastMessage("Authentication failed!");
                         }
                         else{
-                            FirebaseUser user = task.getResult().getUser();
-                            if(user != null) {
-                                launchMainActivity(task.getResult().getUser());
+
+                            FirebaseUser firebaseUser = task.getResult().getUser();
+                            if(firebaseUser != null) {
+                                setUserFromFirebaseUser(firebaseUser);
                             }
                             else{
                                 showToastMessage("Unexpected error! Try again.");
@@ -203,5 +213,53 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void setUserFromFirebaseUser(final FirebaseUser firebaseUser){
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference().child("users");
+        Query query = ref.orderByChild("uid").equalTo(firebaseUser.getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.getValue() != null){
+                   for(DataSnapshot childSnapshot: dataSnapshot.getChildren()){
+                       user = childSnapshot.getValue(User.class);
+                   }
+
+                    launchMainActivity(user.getDisplayName());
+                }
+                else{
+                    launchMainActivity(firebaseUser.getUid());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+    }
+
+    private void saveUserIfDoesNotExist(final FirebaseUser firebaseUser){
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference ref = database.getReference().child("users");
+        Query query = ref.orderByChild("uid").equalTo(firebaseUser.getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+                    ref.push().setValue(new User(firebaseUser.getUid(), firebaseUser.getEmail(), firebaseUser.getDisplayName(), Arrays.asList(User.Role.STUDENT)));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

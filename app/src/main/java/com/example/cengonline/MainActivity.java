@@ -5,15 +5,29 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.cengonline.model.Course;
+import com.example.cengonline.model.User;
+import com.example.cengonline.post.Announcement;
+import com.example.cengonline.post.Assignment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -41,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN);
         firebaseAuth = FirebaseAuth.getInstance();
+
+
+        findViewById(R.id.testButton).setOnClickListener(this);
     }
 
     @Override
@@ -51,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.buttonDisconnect:
                 revokeAccess();
+                break;
+            case R.id.testButton:
+                test();
                 break;
         }
     }
@@ -68,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.w(TAG, "Signed out of google");
                     }
                 });
+
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     private void revokeAccess() {
@@ -83,5 +106,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.w(TAG, "Revoked Access");
                     }
                 });
+    }
+
+    private void test(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+        DatabaseReference refCourse = ref.child("courses");
+
+        Course course = new Course("Test", "Test", "Test", "123123", new ArrayList<User>(), new ArrayList<User>(), new ArrayList<Assignment>(), new ArrayList<Announcement>());
+        User user = new User("x864DH1ajDY1vNGwSb84LI11Vtz2", "sadsada@sadak.com", "Furkan Kayar", Arrays.asList(User.Role.TEACHER));
+        User user2 = new User("sgdahdsahdahg", "ahjdshaj@jadjsa.zaa", "Test User", Arrays.asList(User.Role.STUDENT));
+        course.enrollTeacher(user);
+        course.enrollStudent(user2);
+        Assignment assignment = new Assignment("Assignment 1", "Yarın", Arrays.asList(user2), user, "Bugün", "zorunlu ödev crossroads tarzı");
+        course.getAssignmentList().add(assignment);
+
+        refCourse.push().setValue(course);
     }
 }

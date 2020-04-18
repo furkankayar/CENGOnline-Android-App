@@ -11,10 +11,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.cengonline.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -36,6 +44,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         final EditText memberEmail = (EditText)findViewById(R.id.registerEmail);
         final EditText memberPassword = (EditText)findViewById(R.id.registerPassword);
+        final EditText memberFirstName = (EditText)findViewById(R.id.registerFirstName);
+        final EditText memberLastName = (EditText)findViewById(R.id.registerLastName);
         final Button registerButton = (Button)findViewById(R.id.registerButton);
         registerButton.setOnClickListener(new View.OnClickListener(){
 
@@ -43,6 +53,8 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final String email = memberEmail.getText().toString();
                 final String password = memberPassword.getText().toString();
+                final String firstName = memberFirstName.getText().toString();
+                final String lastName = memberLastName.getText().toString();
 
                 if(TextUtils.isEmpty(email)){
                     Toast.makeText(getApplicationContext(), "Please enter your email", Toast.LENGTH_SHORT).show();
@@ -50,6 +62,14 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 if(TextUtils.isEmpty(password)){
                     Toast.makeText(getApplicationContext(), "Please enter your password", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(TextUtils.isEmpty(firstName)){
+                    Toast.makeText(getApplicationContext(), "Please enter your first name", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(TextUtils.isEmpty(lastName)){
+                    Toast.makeText(getApplicationContext(), "Please enter your last name", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if(password.length() < 6){
@@ -69,9 +89,16 @@ public class RegisterActivity extends AppCompatActivity {
                                     });
                                 }
                                 else{
-                                    Toast.makeText(RegisterActivity.this, task.getResult().getUser().getUid(), Toast.LENGTH_LONG).show();
-                                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                                    finish();
+                                    FirebaseUser firebaseUser = task.getResult().getUser();
+                                    if(firebaseUser != null){
+                                        User user = new User(firebaseUser.getUid(), firebaseUser.getEmail(), firstName + " " + lastName, Arrays.asList(User.Role.STUDENT));
+                                        saveUserToDatabase(user);
+                                        launchMainActivity(user.getDisplayName());
+                                        finish();
+                                    }
+                                    else{
+
+                                    }
                                 }
                             }
                         });
@@ -79,8 +106,19 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    private void launchMainActivity(String displayName){
+        MainActivity.startActivity(this, displayName);
+    }
+
     private void launchLoginActivity(){
 
         startActivity(new Intent(this, LoginActivity.class));
+    }
+
+    private void saveUserToDatabase(User user){
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference databaseUser = database.child("users");
+        databaseUser.push().setValue(user);
     }
 }

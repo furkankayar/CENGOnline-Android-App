@@ -9,4 +9,7 @@
     <string name="welcomeMessage">Welcome to the CENGOnline</string>
     <string name="redirectRegister" >Don\'t have an account?</string>
     <string name="redirectLogin">Have an account?</string>
+    <string name="signUpMessage">Sign Up to CENGOnline</string>
+    <string name="firstNameHint">First Name</string>
+    <string name="lastNameHint">Last Name</string>
 </resources>
