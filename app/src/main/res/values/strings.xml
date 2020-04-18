@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">CENGOnline</string>
+    <string name="emailHint">Email</string>
+    <string name="passwordHint">Password</string>
+    <string name="loginHint">Login</string>
+    <string name="textOR">OR</string>
+    <string name="logoutHint">Logout</string>
+    <string name="registerHint">Register</string>
+    <string name="welcomeMessage">Welcome to the CENGOnline</string>
+    <string name="redirectRegister" >Don\'t have an account?</string>
+    <string name="redirectLogin">Have an account?</string>
+</resources>
