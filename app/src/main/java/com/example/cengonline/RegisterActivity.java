@@ -25,6 +25,11 @@ import java.util.Arrays;
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
+    private EditText memberEmail;
+    private EditText memberPassword;
+    private EditText memberFirstName;
+    private EditText memberLastName;
+    private Button registerButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -40,11 +45,11 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        final EditText memberEmail = (EditText)findViewById(R.id.registerEmail);
-        final EditText memberPassword = (EditText)findViewById(R.id.registerPassword);
-        final EditText memberFirstName = (EditText)findViewById(R.id.registerFirstName);
-        final EditText memberLastName = (EditText)findViewById(R.id.registerLastName);
-        final Button registerButton = (Button)findViewById(R.id.registerButton);
+        memberEmail = (EditText)findViewById(R.id.registerEmail);
+        memberPassword = (EditText)findViewById(R.id.registerPassword);
+        memberFirstName = (EditText)findViewById(R.id.registerFirstName);
+        memberLastName = (EditText)findViewById(R.id.registerLastName);
+        registerButton = (Button)findViewById(R.id.registerButton);
         registerButton.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -119,5 +124,10 @@ public class RegisterActivity extends AppCompatActivity {
         DatabaseReference newVal = databaseUser.push();
         User user = new User(newVal.getKey(), firebaseUser.getUid(), firebaseUser.getEmail(), firstName + " " + lastName, Arrays.asList(User.Role.STUDENT));
         newVal.setValue(user);
+        Toast.makeText(this, "You have been registered successfully.", Toast.LENGTH_LONG).show();
+        this.memberEmail.setText("");
+        this.memberPassword.setText("");
+        this.memberFirstName.setText("");
+        this.memberLastName.setText("");
     }
 }

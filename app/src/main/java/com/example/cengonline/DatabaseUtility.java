@@ -91,7 +91,7 @@ public class DatabaseUtility {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot != null){
+                if(dataSnapshot.exists()){
 
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         final String courseKey = ds.getKey();
@@ -124,6 +124,9 @@ public class DatabaseUtility {
                             }
                         });
                     }
+                }
+                else{
+                    callback.onFailed("Class is not found!");
                 }
             }
 
