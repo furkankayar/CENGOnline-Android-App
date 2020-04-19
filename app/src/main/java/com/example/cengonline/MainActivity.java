@@ -2,125 +2,197 @@ package com.example.cengonline;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
-import com.example.cengonline.post.Announcement;
-import com.example.cengonline.post.Assignment;
+import com.example.cengonline.ui.dialog.JoinClassDialog;
+import com.example.cengonline.ui.dialog.NewClassDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
+import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String TAG = "MainActivity";
-    private static final String ARG_NAME = "username";
+public class MainActivity extends AppCompatActivity {
 
-    public static void startActivity(Context context, String username) {
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra(ARG_NAME, username);
-        context.startActivity(intent);
-    }
-
-    FirebaseAuth firebaseAuth;
-    GoogleSignInClient googleSignInClient;
+    private AppBarConfiguration mAppBarConfiguration;
+    private FirebaseAuth firebaseAuth;
+    private GoogleSignInClient googleSignInClient;
+    private User user;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView textView = findViewById(R.id.textViewWelcome);
-        if (getIntent().hasExtra(ARG_NAME)) {
-            textView.setText(String.format("Welcome - %s", getIntent().getStringExtra(ARG_NAME)));
-        }
-        findViewById(R.id.buttonLogout).setOnClickListener(this);
-        findViewById(R.id.buttonDisconnect).setOnClickListener(this);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                .setDrawerLayout(drawer)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
 
         googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN);
         firebaseAuth = FirebaseAuth.getInstance();
 
+        if(getIntent().hasExtra("user")){
+            this.user = (User)getIntent().getSerializableExtra("user");
+        }
 
-        findViewById(R.id.testButton).setOnClickListener(this);
+
+        if(this.user == null){
+            readUserFromDatabase();
+        }
+        else{
+            setAttributes();
+        }
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.buttonLogout:
+    public boolean onOptionsItemSelected(MenuItem item){
+
+        switch(item.getItemId()){
+            case R.id.action_logout:
                 signOut();
-                break;
-            case R.id.buttonDisconnect:
-                revokeAccess();
-                break;
-            case R.id.testButton:
-                test();
-                break;
+                return true;
+            case R.id.join_class:
+                showJoinClassDialog();
+                return true;
+            case R.id.new_class:
+                showNewClassDialog();
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+
+        if(!this.user.getRoles().contains(User.Role.TEACHER)){
+            invalidateOptionsMenu();
+            menu.findItem(R.id.new_class).setVisible(false);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+                || super.onSupportNavigateUp();
     }
 
     private void signOut() {
         // Firebase sign out
         firebaseAuth.signOut();
 
-        // Google sign out
-        googleSignInClient.signOut().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // Google Sign In failed, update UI appropriately
-                        Log.w(TAG, "Signed out of google");
-                    }
-                });
-
         startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 
-    private void revokeAccess() {
-        // Firebase sign out
-        firebaseAuth.signOut();
+    private void readUserFromDatabase(){
 
-        // Google revoke access
-        googleSignInClient.revokeAccess().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // Google Sign In failed, update UI appropriately
-                        Log.w(TAG, "Revoked Access");
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+        if(firebaseUser != null){
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ref = database.getReference();
+            DatabaseReference userRef = ref.child(("users"));
+
+            Query query = userRef.orderByChild("uid").equalTo(firebaseUser.getUid());
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot ds: dataSnapshot.getChildren()){
+                        user = ds.getValue(User.class);
                     }
-                });
+                    setAttributes();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
     }
 
-    private void test(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference();
-        DatabaseReference refCourse = ref.child("courses");
-
-        Course course = new Course("Test", "Test", "Test", "123123", new ArrayList<User>(), new ArrayList<User>(), new ArrayList<Assignment>(), new ArrayList<Announcement>());
-        User user = new User("x864DH1ajDY1vNGwSb84LI11Vtz2", "sadsada@sadak.com", "Furkan Kayar", Arrays.asList(User.Role.TEACHER));
-        User user2 = new User("sgdahdsahdahg", "ahjdshaj@jadjsa.zaa", "Test User", Arrays.asList(User.Role.STUDENT));
-        course.enrollTeacher(user);
-        course.enrollStudent(user2);
-        Assignment assignment = new Assignment("Assignment 1", "Yarın", Arrays.asList(user2), user, "Bugün", "zorunlu ödev crossroads tarzı");
-        course.getAssignmentList().add(assignment);
-
-        refCourse.push().setValue(course);
+    private void setAttributes(){
+        View header = navigationView.getHeaderView(0);
+        ((TextView)header.findViewById(R.id.navbarEmail)).setText(user.getEmail());
+        ((TextView)header.findViewById(R.id.navbarDisplayName)).setText(user.getDisplayName().toUpperCase());
+        ((TextView)header.findViewById(R.id.navbarEmailImage)).setText(String.valueOf(user.getDisplayName().toUpperCase().charAt(0)));
     }
+
+    private void showJoinClassDialog(){
+        JoinClassDialog joinD = new JoinClassDialog(this);
+        joinD.show();
+    }
+
+    private void showNewClassDialog(){
+        NewClassDialog newD = new NewClassDialog(this);
+        newD.show();
+    }
+
+    public static void startActivity(Context context, User user) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("user", user);
+        context.startActivity(intent);
+    }
+
 }

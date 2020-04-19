@@ -9,17 +9,17 @@ public class Announcement extends AbstractPost {
 
     }
 
-    public Announcement(User postedBy, String postedAt, String body){
-        super(postedBy, postedAt, body);
+    public Announcement(String key, String postedBy, String postedAt, String body){
+        super(key, postedBy, postedAt, body);
     }
 
     @Override
     public void setEditedBy(User editedBy) {
-        this.editedBy =  editedBy.getRoles().contains(User.Role.TEACHER) ? editedBy : null;
+        this.editedBy =  editedBy.getRoles().contains(User.Role.TEACHER) ? editedBy.getKey() : null;
     }
 
     @Override
     public void setPostedBy(User postedBy) {
-        this.postedBy = postedBy.getRoles().contains(User.Role.TEACHER) ? postedBy : null;
+        this.postedBy = postedBy.getRoles().contains(User.Role.TEACHER) ? postedBy.getKey() : null;
     }
 }

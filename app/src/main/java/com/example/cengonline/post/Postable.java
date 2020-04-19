@@ -4,7 +4,7 @@ import com.example.cengonline.model.User;
 
 public interface Postable {
 
-    public User getPostedBy();
+    public String getPostedBy();
     public String getPostedAt();
     public String getBody();
     public void setPostedBy(User postedBy);

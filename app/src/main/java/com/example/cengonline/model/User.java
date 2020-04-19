@@ -11,6 +11,7 @@ public class User implements Serializable{
         ADMIN
     };
 
+    private String key;
     private String uid;
     private String email;
     private String displayName;
@@ -20,11 +21,20 @@ public class User implements Serializable{
 
     }
 
-    public User(String uid, String email, String displayName, List<Role> roles) {
+    public User(String key, String uid, String email, String displayName, List<Role> roles) {
+        this.key = key;
         this.uid = uid;
         this.email = email;
         this.displayName = displayName;
         this.roles = roles;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getUid() {

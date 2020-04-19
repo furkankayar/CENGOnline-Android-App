@@ -5,24 +5,34 @@ import com.example.cengonline.model.User;
 
 public abstract class AbstractPost implements Postable, Editable {
 
-    protected User postedBy;
+    private String key;
+    protected String postedBy;
     private String postedAt;
     private String body;
     private String editedAt;
-    protected User editedBy;
+    protected String editedBy;
 
     public AbstractPost(){
 
     }
 
-    public AbstractPost(User postedBy, String postedAt, String body){
+    public AbstractPost(String key, String postedBy, String postedAt, String body){
+        this.key = key;
         this.postedAt = postedAt;
         this.postedBy = postedBy;
         this.body = body;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     @Override
-    public User getPostedBy(){
+    public String getPostedBy(){
         return this.postedBy;
     }
 
@@ -42,7 +52,7 @@ public abstract class AbstractPost implements Postable, Editable {
     }
 
     @Override
-    public User getEditedBy() {
+    public String getEditedBy() {
         return this.editedBy;
     }
 

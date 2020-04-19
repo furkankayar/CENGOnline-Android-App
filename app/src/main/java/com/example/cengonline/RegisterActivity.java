@@ -20,9 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -91,10 +89,9 @@ public class RegisterActivity extends AppCompatActivity {
                                 else{
                                     FirebaseUser firebaseUser = task.getResult().getUser();
                                     if(firebaseUser != null){
-                                        User user = new User(firebaseUser.getUid(), firebaseUser.getEmail(), firstName + " " + lastName, Arrays.asList(User.Role.STUDENT));
-                                        saveUserToDatabase(user);
-                                        launchMainActivity(user.getDisplayName());
-                                        finish();
+
+                                        saveUserToDatabase(firebaseUser, firstName, lastName);
+
                                     }
                                     else{
 
@@ -106,8 +103,8 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void launchMainActivity(String displayName){
-        MainActivity.startActivity(this, displayName);
+    private void launchMainActivity(User user){
+        MainActivity.startActivity(this, user);
     }
 
     private void launchLoginActivity(){
@@ -115,10 +112,12 @@ public class RegisterActivity extends AppCompatActivity {
         startActivity(new Intent(this, LoginActivity.class));
     }
 
-    private void saveUserToDatabase(User user){
+    private void saveUserToDatabase(FirebaseUser firebaseUser, String firstName, String lastName){
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference databaseUser = database.child("users");
-        databaseUser.push().setValue(user);
+        DatabaseReference newVal = databaseUser.push();
+        User user = new User(newVal.getKey(), firebaseUser.getUid(), firebaseUser.getEmail(), firstName + " " + lastName, Arrays.asList(User.Role.STUDENT));
+        newVal.setValue(user);
     }
 }

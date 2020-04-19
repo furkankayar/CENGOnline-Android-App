@@ -7,28 +7,40 @@ import java.util.List;
 
 public class Course {
 
+    private String key;
     private String className;
     private String classSection;
     private String classSubject;
     private String classCode;
-    private List<User> teacherList;
-    private List<User> studentList;
-    private List<Assignment> assignmentList;
-    private List<Announcement> announcementList;
+    private String createdBy;
+    private List<String> teacherList;
+    private List<String> studentList;
+    private List<String> assignmentList;
+    private List<String> announcementList;
 
     public Course(){
 
     }
 
-    public Course(String className, String classSection, String classSubject, String classCode, List<User> teacherList, List<User> studentList, List<Assignment> assignmentList, List<Announcement> announcementList) {
+    public Course(String key, String className, String classSection, String classSubject, String classCode, String createdBy, List<String> teacherList, List<String> studentList, List<String> assignmentList, List<String> announcementList) {
+        this.key = key;
         this.className = className;
         this.classSection = classSection;
         this.classSubject = classSubject;
         this.classCode = classCode;
+        this.createdBy = createdBy;
         this.teacherList = teacherList;
         this.studentList = studentList;
         this.assignmentList = assignmentList;
         this.announcementList = announcementList;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getClassName() {
@@ -63,47 +75,55 @@ public class Course {
         this.classCode = classCode;
     }
 
-    public List<User> getTeacherList() {
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public List<String> getTeacherList() {
         return teacherList;
     }
 
-    public void setTeacherList(List<User> teacherList) {
+    public void setTeacherList(List<String> teacherList) {
         this.teacherList = teacherList;
     }
 
-    public List<User> getStudentList() {
+    public List<String> getStudentList() {
         return studentList;
     }
 
-    public void setStudentList(List<User> studentList) {
+    public void setStudentList(List<String> studentList) {
         this.studentList = studentList;
     }
 
-    public List<Assignment> getAssignmentList() {
+    public List<String> getAssignmentList() {
         return assignmentList;
     }
 
-    public void setAssignmentList(List<Assignment> assignmentList) {
+    public void setAssignmentList(List<String> assignmentList) {
         this.assignmentList = assignmentList;
     }
 
-    public List<Announcement> getAnnouncementList() {
+    public List<String> getAnnouncementList() {
         return announcementList;
     }
 
-    public void setAnnouncementList(List<Announcement> announcementList) {
+    public void setAnnouncementList(List<String> announcementList) {
         this.announcementList = announcementList;
     }
 
-    public List<User> enrollStudent(User user){
+    public List<String> enrollStudent(User user){
         if(user.getRoles().contains(User.Role.STUDENT))
-            this.studentList.add(user);
+            this.studentList.add(user.getKey());
         return this.studentList;
     }
 
-    public List<User> enrollTeacher(User user){
+    public List<String> enrollTeacher(User user){
         if(user.getRoles().contains(User.Role.TEACHER))
-            this.teacherList.add(user);
+            this.teacherList.add(user.getKey());
         return this.teacherList;
     }
 }

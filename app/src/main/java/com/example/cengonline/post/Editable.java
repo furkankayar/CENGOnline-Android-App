@@ -6,6 +6,6 @@ public interface Editable {
 
     public String getEditedAt();
     public void setEditedAt(String editedAt);
-    public User getEditedBy();
+    public String getEditedBy();
     public void setEditedBy(User editedBy);
 }
