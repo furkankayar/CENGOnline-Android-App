@@ -1,5 +1,6 @@
 package com.example.cengonline;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -7,13 +8,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.Menu;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
+import com.example.cengonline.ui.course.CourseFragment;
 import com.example.cengonline.ui.dialog.JoinClassDialog;
 import com.example.cengonline.ui.dialog.NewClassDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -35,46 +39,51 @@ import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
+import androidx.navigation.NavGraph;
 import androidx.navigation.Navigation;
+import androidx.navigation.Navigator;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private AppBarConfiguration mAppBarConfiguration;
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
     private User user;
     private NavigationView navigationView;
+    private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        this.drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setDrawerLayout(drawer)
+                R.id.nav_home, R.id.nav_course)
+                .setDrawerLayout(drawerLayout)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+
+
+        this.navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+
+        NavigationUI.setupActionBarWithNavController(this, this.navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, this.navController);
+
+        navigationView.setNavigationItemSelectedListener(this);
 
         googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -90,7 +99,12 @@ public class MainActivity extends AppCompatActivity {
         else{
             setAttributes();
         }
+
+
+        createNavigationMenuItems();
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -195,4 +209,62 @@ public class MainActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
+
+    private void createNavigationMenuItems(){
+
+        final Menu menu = navigationView.getMenu();
+        final SubMenu subMenu = menu.addSubMenu("Enrolled");
+        /*menu.add("ITEM");
+        MenuItem item = menu.getItem(3);
+        item.setCheckable(true);
+        item.setIcon(R.drawable.ic_menu_camera);*/
+
+        DatabaseUtility.getInstance().getAllCourses(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                List<Course> courses = (List<Course>)result;
+                subMenu.removeGroup(1);
+
+                for(final Course course : courses){
+                    MenuItem item = subMenu.add(1, 0 , 200, course.getClassName());
+                    item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+
+                            //navController.navigate(R.id.nav_course, args);
+                            Intent intent = new Intent(getBaseContext(), CourseFragment.class);
+                            intent.putExtra("course", course);
+                            startActivity(intent);
+                            return false;
+                        }
+                    });
+                    item.setCheckable(true);
+                }
+            }
+
+            @Override
+            public void onFailed(String message) {
+
+            }
+        });
+    }
+
+    public void makeToastText(String msg){
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        item.setChecked(true);
+        this.drawerLayout.closeDrawers();
+
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.nav_home: navController.navigate(R.id.nav_home); break;
+        }
+
+        return true;
+    }
 }

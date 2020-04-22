@@ -3,11 +3,13 @@ package com.example.cengonline.model;
 import com.example.cengonline.post.Announcement;
 import com.example.cengonline.post.Assignment;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Course {
+public class Course implements Serializable {
 
     private String key;
+    private int imageId;
     private String className;
     private String classSection;
     private String classSubject;
@@ -22,8 +24,11 @@ public class Course {
 
     }
 
-    public Course(String key, String className, String classSection, String classSubject, String classCode, String createdBy, List<String> teacherList, List<String> studentList, List<String> assignmentList, List<String> announcementList) {
+
+
+    public Course(String key, int imageId, String className, String classSection, String classSubject, String classCode, String createdBy, List<String> teacherList, List<String> studentList, List<String> assignmentList, List<String> announcementList) {
         this.key = key;
+        this.imageId = imageId;
         this.className = className;
         this.classSection = classSection;
         this.classSubject = classSubject;
@@ -33,6 +38,14 @@ public class Course {
         this.studentList = studentList;
         this.assignmentList = assignmentList;
         this.announcementList = announcementList;
+    }
+
+    public int getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(int imageId) {
+        this.imageId = imageId;
     }
 
     public String getKey() {

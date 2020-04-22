@@ -48,4 +48,22 @@
         <item name="color">@android:color/black</item>
     </style>
 
+    <style name="fontForCourseNameOnCard">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="fontForCourseSectionOnCard">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="fontForCourseTeacherOnCard">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 </resources>

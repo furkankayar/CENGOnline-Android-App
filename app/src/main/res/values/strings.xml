@@ -24,5 +24,9 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
 
+    <string name="courseName">Course Name</string>
+    <string name="courseSection">Course Section</string>
+    <string name="courseCode">Course Code</string>
+
     <string name="home_second">Home Second</string>
 </resources>
