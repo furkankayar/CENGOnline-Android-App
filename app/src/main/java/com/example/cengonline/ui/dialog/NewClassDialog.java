@@ -60,7 +60,7 @@ public class NewClassDialog extends Dialog implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.new_class_create_button: createNewClass();break;
+            case R.id.new_class_create_button: this.createButton.setEnabled(false); createNewClass();break;
             case R.id.new_class_cancel_button: dismiss(); break;
             default: break;
         }
@@ -74,6 +74,7 @@ public class NewClassDialog extends Dialog implements View.OnClickListener {
 
         if(TextUtils.isEmpty(courseName) || courseName.length() < 5){
             Toast.makeText(this.activity, "Class name should be at least 5 characters!", Toast.LENGTH_LONG).show();
+            this.createButton.setEnabled(true);
             return;
         }
 
@@ -89,15 +90,18 @@ public class NewClassDialog extends Dialog implements View.OnClickListener {
                         if(user.getRoles().contains(User.Role.TEACHER)){
                             DatabaseUtility.getInstance().saveNewCourse(courseName, courseSection, courseSubject, classCode, user);
                             makeToastMessage("Class has been created with class code: " + classCode);
+                            dismiss();
                         }
                         else{
                             makeToastMessage("An error occurred try again please!");
+                            createButton.setEnabled(true);
                         }
                     }
 
                     @Override
                     public void onFailed(String message) {
                         makeToastMessage(message);
+                        createButton.setEnabled(true);
                     }
                 });
             }
@@ -105,14 +109,12 @@ public class NewClassDialog extends Dialog implements View.OnClickListener {
             @Override
             public void onFailed(String message) {
                 makeToastMessage(message);
+                createButton.setEnabled(true);
             }
         });
     }
 
     private void makeToastMessage(String message){
         Toast.makeText(this.activity, message, Toast.LENGTH_LONG).show();
-        dismiss();
     }
-
-
 }

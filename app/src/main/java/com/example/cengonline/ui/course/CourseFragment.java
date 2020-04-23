@@ -1,35 +1,26 @@
 package com.example.cengonline.ui.course;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.cardview.widget.CardView;
 
 import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.cengonline.ui.dialog.NewAnnouncementDialog;
 
-import org.w3c.dom.Text;
 
-public class CourseFragment extends AppCompatActivity {
+public class CourseFragment extends AppCompatActivity implements View.OnClickListener {
 
     private final int DELETE_ITEM = 1000;
     private TextView courseName;
@@ -38,6 +29,9 @@ public class CourseFragment extends AppCompatActivity {
     private ImageView courseImage;
     private Course course;
     private Toolbar toolbar;
+    private TextView shareImageText;
+    private CardView shareCard;
+    private LinearLayout scrollLinearLayout;
 
 
     @Override
@@ -50,6 +44,9 @@ public class CourseFragment extends AppCompatActivity {
         this.courseImage = findViewById(R.id.course_fragment_course_image);
         this.courseCode = findViewById(R.id.course_fragment_course_code);
         this.toolbar = findViewById(R.id.course_toolbar);
+        this.shareImageText = findViewById(R.id.share_image_text);
+        this.shareCard = findViewById(R.id.share_card);
+        this.scrollLinearLayout = findViewById(R.id.course_fragment_scroll_linear_layout);
 
         setSupportActionBar(this.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -64,10 +61,38 @@ public class CourseFragment extends AppCompatActivity {
             this.courseImage.setImageResource(this.course.getImageId());
             this.toolbar.setTitle(this.course.getClassName());
 
+
+            DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+                @Override
+                public void onSuccess(Object result) {
+                    User user = (User)result;
+                    if(course.getTeacherList() != null && course.getTeacherList().contains(user.getKey())){
+                        shareImageText.setText(user.getDisplayName().toUpperCase().substring(0, 1));
+                        shareCard.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        scrollLinearLayout.removeView(shareCard);
+                    }
+                }
+
+                @Override
+                public void onFailed(String message) {
+
+                }
+            });
+
+            this.shareCard.setOnClickListener(this);
+
         }
         else{
             finish();
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        NewAnnouncementDialog newAD = new NewAnnouncementDialog(this, this.course);
+        newAD.show();
     }
 
     @Override
@@ -130,7 +155,7 @@ public class CourseFragment extends AppCompatActivity {
 
     private void unenrollCourse(){
 
-        DatabaseUtility.getInstance().removeStudentFromCourse(this.course.getClassCode(), new DatabaseCallback(){
+        DatabaseUtility.getInstance().removeStudentFromCourse(this.course, new DatabaseCallback(){
             @Override
             public void onSuccess(Object result) {
                 String msg = (String) result;
@@ -148,7 +173,7 @@ public class CourseFragment extends AppCompatActivity {
 
     private void removeCourse(){
 
-        DatabaseUtility.getInstance().removeCourse(this.course.getClassCode(), new DatabaseCallback() {
+        DatabaseUtility.getInstance().removeCourse(this.course, new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 String msg = (String) result;

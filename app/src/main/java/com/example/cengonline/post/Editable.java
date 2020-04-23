@@ -7,5 +7,5 @@ public interface Editable {
     public String getEditedAt();
     public void setEditedAt(String editedAt);
     public String getEditedBy();
-    public void setEditedBy(User editedBy);
+    public void setEditedBy(String editedBy);
 }

@@ -3,7 +3,6 @@
     <string name="emailHint">Email</string>
     <string name="passwordHint">Password</string>
     <string name="loginHint">Login</string>
-    <string name="textOR">OR</string>
     <string name="logoutHint">Logout</string>
     <string name="registerHint">Register</string>
     <string name="welcomeMessage">Welcome to the CENGOnline</string>
@@ -13,20 +12,15 @@
     <string name="firstNameHint">First Name</string>
     <string name="lastNameHint">Last Name</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">CENGOnline</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
 
-    <string name="courseName">Course Name</string>
     <string name="courseSection">Course Section</string>
     <string name="courseCode">Course Code</string>
 
-    <string name="home_second">Home Second</string>
 </resources>

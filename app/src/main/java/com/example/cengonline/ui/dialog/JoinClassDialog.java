@@ -45,7 +45,7 @@ public class JoinClassDialog extends Dialog implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.join_class_join_button: joinClass(); break;
+            case R.id.join_class_join_button: this.joinButton.setEnabled(false); joinClass(); break;
             case R.id.join_class_cancel_button: dismiss(); break;
             default: break;
         }
@@ -65,6 +65,7 @@ public class JoinClassDialog extends Dialog implements View.OnClickListener {
             public void onFailed(String message) {
                 makeToastMessage((String)message);
                 classCodeEditText.setText("");
+                joinButton.setEnabled(true);
             }
         });
     }

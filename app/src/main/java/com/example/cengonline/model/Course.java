@@ -17,16 +17,13 @@ public class Course implements Serializable {
     private String createdBy;
     private List<String> teacherList;
     private List<String> studentList;
-    private List<String> assignmentList;
-    private List<String> announcementList;
 
     public Course(){
 
     }
 
 
-
-    public Course(String key, int imageId, String className, String classSection, String classSubject, String classCode, String createdBy, List<String> teacherList, List<String> studentList, List<String> assignmentList, List<String> announcementList) {
+    public Course(String key, int imageId, String className, String classSection, String classSubject, String classCode, String createdBy, List<String> teacherList, List<String> studentList) {
         this.key = key;
         this.imageId = imageId;
         this.className = className;
@@ -36,8 +33,6 @@ public class Course implements Serializable {
         this.createdBy = createdBy;
         this.teacherList = teacherList;
         this.studentList = studentList;
-        this.assignmentList = assignmentList;
-        this.announcementList = announcementList;
     }
 
     public int getImageId() {
@@ -112,21 +107,6 @@ public class Course implements Serializable {
         this.studentList = studentList;
     }
 
-    public List<String> getAssignmentList() {
-        return assignmentList;
-    }
-
-    public void setAssignmentList(List<String> assignmentList) {
-        this.assignmentList = assignmentList;
-    }
-
-    public List<String> getAnnouncementList() {
-        return announcementList;
-    }
-
-    public void setAnnouncementList(List<String> announcementList) {
-        this.announcementList = announcementList;
-    }
 
     public List<String> enrollStudent(User user){
         if(user.getRoles().contains(User.Role.STUDENT))

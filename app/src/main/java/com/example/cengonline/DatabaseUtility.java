@@ -1,13 +1,20 @@
 package com.example.cengonline;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.cengonline.model.Course;
+import com.example.cengonline.model.CourseAnnouncements;
+import com.example.cengonline.model.EnrolledCourses;
 import com.example.cengonline.model.User;
+import com.example.cengonline.post.Announcement;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -96,9 +104,40 @@ public class DatabaseUtility {
         int courseImage = images[random.nextInt(images.length)];
 
         DatabaseReference coursesRef = FirebaseDatabase.getInstance().getReference().child("courses");
-        DatabaseReference newVal = coursesRef.push();
-        Course course = new Course(newVal.getKey(), courseImage, courseName, courseSection, courseSubject, classCode, user.getKey(), Arrays.asList(user.getKey()), new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+        final DatabaseReference newVal = coursesRef.push();
+        final Course course = new Course(newVal.getKey(), courseImage, courseName, courseSection, courseSubject, classCode, user.getKey(), Arrays.asList(user.getKey()), new ArrayList<String>());
         newVal.setValue(course);
+    }
+
+    public void getCourseWithAllInfo(String classCode, final DatabaseCallback callback){
+
+        final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
+        Query query = courseRef.orderByChild("classCode").equalTo(classCode);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Course course = null;
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        course = ds.getValue(Course.class);
+                    }
+                    if(course != null){
+                        callback.onSuccess(course);
+                    }
+                    else{
+                        callback.onFailed("Course not found!");
+                    }
+                }
+                else{
+                    callback.onFailed("Course not found!");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFailed("Course not found!");
+            }
+        });
     }
 
     public void addStudentToCourse(String classCode, final DatabaseCallback callback){
@@ -116,45 +155,44 @@ public class DatabaseUtility {
                         getCurrentUserWithAllInfo(new DatabaseCallback() {
                             @Override
                             public void onSuccess(Object result) {
-                                final User user = (User) result;
-                                if(user.getRoles().contains(User.Role.TEACHER)){
-                                    List<String> teacherList = course.getTeacherList();
-                                    if(teacherList == null){
-                                        teacherList = Arrays.asList(user.getKey());
+                                final User student = (User) result;
+                                if(student.getRoles().contains(User.Role.TEACHER)){
+                                    List<String> techerList = course.getTeacherList();
+                                    if(techerList == null){
+                                        techerList = Arrays.asList(student.getKey());
                                     }
                                     else{
-                                        if(teacherList.contains(user.getKey())){
+                                        if(techerList.contains(student.getKey())){
                                             callback.onFailed("You have already enrolled!");
                                             return;
                                         }
                                         else{
-                                            teacherList.add(user.getKey());
+                                            techerList.add(student.getKey());
                                         }
                                     }
-                                    course.setTeacherList(teacherList);
+                                    course.setTeacherList(techerList);
                                     courseRef.child(courseKey).setValue(course);
-                                    callback.onSuccess("You enrolled the class successfully.");
                                 }
-                                else {
-
+                                else{
                                     List<String> studentList = course.getStudentList();
                                     if(studentList == null){
-                                        studentList = Arrays.asList(user.getKey());
+                                        studentList = Arrays.asList(student.getKey());
                                     }
                                     else{
-                                        if(studentList.contains(user.getKey())){
+                                        if(studentList.contains(student.getKey())){
                                             callback.onFailed("You have already enrolled!");
                                             return;
                                         }
                                         else{
-                                            studentList.add(user.getKey());
+                                            studentList.add(student.getKey());
                                         }
                                     }
                                     course.setStudentList(studentList);
                                     courseRef.child(courseKey).setValue(course);
-                                    callback.onSuccess("You enrolled the class successfully.");
                                 }
+                                callback.onSuccess("You enrolled the class successfully.");
                             }
+
                             @Override
                             public void onFailed(String message) {
                                 callback.onFailed("An error occurred!");
@@ -176,42 +214,39 @@ public class DatabaseUtility {
 
     public void getAllCourses(final DatabaseCallback callback){
 
-
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference coursesRef = database.getReference().child("courses");
+        final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
 
         getCurrentUserWithAllInfo(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
-                final User user = (User)result;
-                coursesRef.addValueEventListener(new ValueEventListener() {
+                final User user = (User) result;
+                Query query = courseRef.orderByChild("key");
+                query.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        List<Course> selectedCourses = new ArrayList<Course>();
+                        ArrayList<Course> courses = new ArrayList<Course>();
                         for(DataSnapshot ds : dataSnapshot.getChildren()){
                             Course course = ds.getValue(Course.class);
-                            if(course.getStudentList() != null && course.getStudentList().contains(user.getKey())){
-                                selectedCourses.add(course);
+                            if(course.getTeacherList() != null && course.getTeacherList().contains(user.getKey())){
+                                courses.add(course);
                             }
-                            else if(course.getTeacherList() != null && course.getTeacherList().contains(user.getKey())){
-                                selectedCourses.add(course);
-
+                            else if(course.getStudentList() != null && course.getStudentList().contains(user.getKey())){
+                                courses.add(course);
                             }
                         }
-                        callback.onSuccess(selectedCourses);
+                        callback.onSuccess(courses);
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        callback.onFailed(databaseError.getMessage());
+                        callback.onFailed("An error occurred!");
                     }
                 });
             }
 
             @Override
             public void onFailed(String message) {
-                callback.onFailed(message);
+                callback.onFailed("An error occurred!");
             }
         });
     }
@@ -237,104 +272,132 @@ public class DatabaseUtility {
         });
     }
 
-    public void removeStudentFromCourse(String classCode, final DatabaseCallback callback){
+    public void removeStudentFromCourse(final Course course, final DatabaseCallback callback){
 
-        final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
-        Query query = courseRef.orderByChild("classCode").equalTo(classCode);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        final String courseKey = ds.getKey();
-                        final Course course = ds.getValue(Course.class);
-                        getCurrentUserWithAllInfo(new DatabaseCallback() {
-                            @Override
-                            public void onSuccess(Object result) {
-                                final User user = (User) result;
-                                if(user.getRoles().contains(User.Role.TEACHER)){
-                                    List<String> teacherList = course.getTeacherList();
-                                    if(teacherList != null){
-                                        if(teacherList.contains(user.getKey())){
-                                            teacherList.remove(user.getKey());
-                                            course.setTeacherList(teacherList);
-                                            courseRef.child(courseKey).setValue(course);
-                                            callback.onSuccess("You are no longer teacher of this course!");
-                                            return;
-                                        }
-                                    }
-                                }
-                                else {
-                                    List<String> studentList = course.getStudentList();
-                                    if(studentList != null){
-                                        if(studentList.contains(user.getKey())){
-                                            studentList.remove(user.getKey());
-                                            course.setStudentList(studentList);
-                                            courseRef.child(courseKey).setValue(course);
-                                            callback.onSuccess("You are no longer student of this course!");
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                            @Override
-                            public void onFailed(String message) {
-                                callback.onFailed("An error occurred!");
-                            }
-                        });
-                    }
-                }
-                else{
-                    callback.onFailed("Class is not found!");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.onFailed("An error occurred!");
-            }
-        });
-    }
-
-    public void removeCourse(final String courseCode, final DatabaseCallback callback){
-
-        final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
         getCurrentUserWithAllInfo(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
-                Query query = courseRef.orderByChild("classCode").equalTo(courseCode);
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
+                Query query = courseRef.orderByChild("key").equalTo(course.getKey());
+                query.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
-                            Course course = null;
-                            for(DataSnapshot ds : dataSnapshot.getChildren()){
-                                course = ds.getValue(Course.class);
+
+                        for(DataSnapshot ds : dataSnapshot.getChildren()){
+                            Course course = ds.getValue(Course.class);
+                            if(course.getStudentList() != null){
+                                course.getStudentList().remove(user.getKey());
                             }
-                            if(course != null && dataSnapshot.getKey() != null && course.getCreatedBy().equals(user.getKey())){
-                                courseRef.child(course.getKey()).removeValue();
-                                callback.onSuccess("You have removed course successfully!");
+                            if(course.getTeacherList() != null){
+                                course.getTeacherList().remove(user.getKey());
                             }
-                            else{
-                                callback.onFailed("An error occurred!");
-                            }
-                        }
-                        else{
-                            callback.onFailed("An error occurred!");
+                            courseRef.child(course.getKey()).setValue(course);
+                            callback.onSuccess("You unenrolled successfully!");
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        callback.onFailed("An error occurred!");
+
                     }
                 });
             }
 
             @Override
             public void onFailed(String message) {
-                callback.onFailed("An error occurred!");
+
+            }
+        });
+    }
+
+    public void removeCourse(final Course course, final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User) result;
+                final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
+                Query query = courseRef.orderByChild("key").equalTo(course.getKey());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot ds: dataSnapshot.getChildren()){
+                            Course course = ds.getValue(Course.class);
+                            if(user.getKey().equals(course.getCreatedBy())){
+                                courseRef.child(course.getKey()).removeValue();
+                                callback.onSuccess("You removed course successfully!");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+
+            }
+        });
+    }
+
+    public void newCourseAnnouncement(final Course course, final String announcementBody, final DatabaseCallback callback){
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("courseAnnouncements");
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                if(user.getRoles().contains(User.Role.TEACHER) && course.getTeacherList().contains(user.getKey())){
+                    Query query = ref.orderByChild("courseKey").equalTo(course.getKey());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                CourseAnnouncements announcements = null;
+                                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                    announcements = ds.getValue(CourseAnnouncements.class);
+                                }
+                                if(announcements != null && announcements.getAnnouncements() != null){
+                                    Announcement announcement = new Announcement(user.getKey(), new Date().toString(), announcementBody);
+                                    announcements.getAnnouncements().add(announcement);
+                                    ref.child(announcements.getKey()).setValue(announcements);
+                                    callback.onSuccess("You have posted an announcement!");
+                                }
+                                else{
+                                    callback.onFailed("An error occurred while posting announcement!");
+                                }
+                            }
+                            else{
+
+                                DatabaseReference newVal = ref.push();
+                                Announcement announcement = new Announcement(user.getKey(), new Date().toString(), announcementBody);
+                                CourseAnnouncements announcements = new CourseAnnouncements(newVal.getKey(), Arrays.asList(announcement), course.getKey());
+                                newVal.setValue(announcements);
+                                callback.onSuccess("You have posted an announcement!");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            callback.onFailed("An error occurred while posting announcement!");
+                        }
+                    });
+                }
+                else{
+                    callback.onFailed("You are not authorized to post announcement!");
+                }
+            }
+
+            @Override
+            public void onFailed(String message) {
+
             }
         });
     }

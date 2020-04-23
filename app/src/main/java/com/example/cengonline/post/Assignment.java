@@ -15,8 +15,8 @@ public class Assignment extends AbstractPost {
         super();
     }
 
-    public Assignment(String key, String title, String dueDate, List<User> assignedStudents, String postedBy, String postedAt, String body){
-        super(key, postedBy, postedAt, body);
+    public Assignment(String title, String dueDate, List<User> assignedStudents, String postedBy, String postedAt, String body){
+        super(postedBy, postedAt, body);
         this.title = title;
         this.dueDate = dueDate;
         this.assignedStudents = assignedStudents;
@@ -53,13 +53,4 @@ public class Assignment extends AbstractPost {
         return this.assignedStudents;
     }
 
-    @Override
-    public void setEditedBy(User editedBy) {
-        this.editedBy = editedBy.getRoles().contains(User.Role.TEACHER) ? editedBy.getKey() : null;
-    }
-
-    @Override
-    public void setPostedBy(User postedBy) {
-        this.postedBy = postedBy.getRoles().contains(User.Role.TEACHER) ? postedBy.getKey() : null;
-    }
 }

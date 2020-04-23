@@ -33,6 +33,7 @@ import com.example.cengonline.R;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
 import com.example.cengonline.ui.course.CourseFragment;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.w3c.dom.Text;
 
@@ -173,7 +174,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public Drawable getSelectedItemDrawable() {
+    private Drawable getSelectedItemDrawable() {
         int[] attrs = new int[] { R.attr.selectableItemBackground };
         TypedArray ta = getActivity().obtainStyledAttributes(attrs);
         Drawable selectedItemDrawable = ta.getDrawable(0);
@@ -181,7 +182,7 @@ public class HomeFragment extends Fragment {
         return selectedItemDrawable;
     }
 
-    public int DPtoPX(int dps){
+    private int DPtoPX(int dps){
         return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, getActivity().getResources().getDisplayMetrics()));
     }
 }

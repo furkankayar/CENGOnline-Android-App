@@ -2,6 +2,7 @@ package com.example.cengonline;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -195,11 +196,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showJoinClassDialog(){
         JoinClassDialog joinD = new JoinClassDialog(this);
+        /*joinD.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                recreate();
+            }
+        });*/
         joinD.show();
     }
 
     private void showNewClassDialog(){
         NewClassDialog newD = new NewClassDialog(this);
+        /*newD.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                recreate();
+            }
+        });*/
         newD.show();
     }
 

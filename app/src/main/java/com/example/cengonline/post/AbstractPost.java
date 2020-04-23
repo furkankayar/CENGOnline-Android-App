@@ -3,9 +3,10 @@ package com.example.cengonline.post;
 
 import com.example.cengonline.model.User;
 
-public abstract class AbstractPost implements Postable, Editable {
+import java.io.Serializable;
 
-    private String key;
+public abstract class AbstractPost implements Postable, Editable, Serializable {
+
     protected String postedBy;
     private String postedAt;
     private String body;
@@ -16,20 +17,12 @@ public abstract class AbstractPost implements Postable, Editable {
 
     }
 
-    public AbstractPost(String key, String postedBy, String postedAt, String body){
-        this.key = key;
+    public AbstractPost(String postedBy, String postedAt, String body){
         this.postedAt = postedAt;
         this.postedBy = postedBy;
         this.body = body;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 
     @Override
     public String getPostedBy(){
@@ -71,4 +64,13 @@ public abstract class AbstractPost implements Postable, Editable {
         this.editedAt = editedAt;
     }
 
+    @Override
+    public void setPostedBy(String postedBy) {
+        this.postedBy = postedBy;
+    }
+
+    @Override
+    public void setEditedBy(String editedBy) {
+        this.editedBy = editedBy;
+    }
 }
