@@ -1,34 +1,23 @@
 package com.example.cengonline.ui.course;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 
 import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
-import com.example.cengonline.Utility;
 import com.example.cengonline.model.Course;
-import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Announcement;
-import com.example.cengonline.ui.dialog.NewAnnouncementDialog;
-
-import java.util.ArrayList;
-import java.util.Collections;
-
-import java.util.List;
+import com.example.cengonline.ui.dialog.EditAnnouncementDialog;
 
 
 public class AnnouncementFragment extends AppCompatActivity implements View.OnClickListener {
@@ -38,6 +27,7 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
 
     private Toolbar toolbar;
     private User user;
+    private Course course;
     private Announcement announcement;
     private TextView profilTextView;
     private TextView userTextView;
@@ -61,9 +51,10 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if(getIntent() != null && getIntent().getSerializableExtra("user") != null && getIntent().getSerializableExtra("announcement") != null){
+        if(getIntent() != null && getIntent().getSerializableExtra("user") != null && getIntent().getSerializableExtra("announcement") != null && getIntent().getSerializableExtra("course") != null){
 
             this.user = (User)getIntent().getSerializableExtra("user");
+            this.course = (Course)getIntent().getSerializableExtra("course");
             this.announcement = (Announcement)getIntent().getSerializableExtra("announcement");
 
             this.profilTextView.setText(this.user.getDisplayName().toUpperCase().substring(0, 1));
@@ -127,9 +118,30 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
             case android.R.id.home:
                 onBackPressed();
                 break;
-
+            case EDIT_ITEM:
+                showEditAnnouncementDialog();
+                break;
+            case DELETE_ITEM:
+                deleteAnnouncement();
+                break;
         }
         return true;
+    }
+
+    private void deleteAnnouncement(){
+        DatabaseUtility.getInstance().deleteCourseAnnouncement(course, announcement, new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                String message = (String)result;
+                makeToastMessage(message);
+                finish();
+            }
+
+            @Override
+            public void onFailed(String message) {
+                makeToastMessage(message);
+            }
+        });
     }
 
     private void setMenuItems(final Menu menu){
@@ -151,6 +163,16 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
         });
     }
 
+    private void showEditAnnouncementDialog(){
+        EditAnnouncementDialog eaD = new EditAnnouncementDialog(this, this.course, this.announcement);
+        eaD.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                recreate();
+            }
+        });
+        eaD.show();
+    }
 
 
 

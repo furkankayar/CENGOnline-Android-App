@@ -196,23 +196,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showJoinClassDialog(){
         JoinClassDialog joinD = new JoinClassDialog(this);
-        /*joinD.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                recreate();
-            }
-        });*/
         joinD.show();
     }
 
     private void showNewClassDialog(){
         NewClassDialog newD = new NewClassDialog(this);
-        /*newD.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                recreate();
-            }
-        });*/
         newD.show();
     }
 

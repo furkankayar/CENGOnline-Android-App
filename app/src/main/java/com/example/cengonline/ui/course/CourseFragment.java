@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -25,6 +26,7 @@ import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Announcement;
 import com.example.cengonline.ui.dialog.NewAnnouncementDialog;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class CourseFragment extends AppCompatActivity implements View.OnClickListener, DatabaseCallback {
+public class CourseFragment extends AppCompatActivity implements View.OnClickListener, DatabaseCallback, BottomNavigationView.OnNavigationItemSelectedListener {
 
     private final int DELETE_ITEM = 1000;
     private TextView courseName;
@@ -48,6 +50,8 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
     private List<User> users;
     private List<Announcement> announcements;
     private List<CardModel> cardModels;
+    private BottomNavigationView navigationView;
+    private LinearLayout assignmentsLinearLayout;
 
 
     @Override
@@ -66,6 +70,10 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         this.shareImageText = findViewById(R.id.share_image_text);
         this.shareCard = findViewById(R.id.share_card);
         this.scrollLinearLayout = findViewById(R.id.course_fragment_scroll_linear_layout);
+        this.navigationView = findViewById(R.id.bottom_navigation);
+        this.assignmentsLinearLayout = findViewById(R.id.assignments_linear_layout);
+
+        this.navigationView.setOnNavigationItemSelectedListener(this);
 
         setSupportActionBar(this.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -297,7 +305,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         cardView.addView(outerLinearLayout, outerLinearLayoutLayoutParams);
 
         this.announcementCards.add(cardView);
-        scrollLinearLayout.addView(cardView, cardViewLayoutParams);
+        this.assignmentsLinearLayout.addView(cardView, cardViewLayoutParams);
     }
 
     private void goToAnnouncement(User user, Announcement announcement){
@@ -308,7 +316,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         startActivity(intent);
     }
 
-    private void printCardModels(){
+    private void printAnnouncementCardModels(){
 
         Collections.sort(cardModels);
 
@@ -331,10 +339,10 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
                 public void onSuccess(Object result) {
                     User user = (User)result;
                     for(CardView cv : announcementCards){
-                        scrollLinearLayout.removeView(cv);
+                        assignmentsLinearLayout.removeView(cv);
                     }
                     cardModels.add(new CardModel(user, an));
-                    printCardModels();
+                    printAnnouncementCardModels();
                 }
 
                 @Override
@@ -343,13 +351,31 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
                 }
             });
         }
-
-
     }
 
     @Override
     public void onFailed(String message) {
         makeToastMessage(message);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        int itemId = item.getItemId();
+        item.setChecked(true);
+
+        switch (itemId){
+            case R.id.navigation_announcements:
+                if(this.assignmentsLinearLayout.getParent() == null)
+                    this.scrollLinearLayout.addView(this.assignmentsLinearLayout);
+                break;
+            case R.id.navigation_assignments:
+                this.scrollLinearLayout.removeView(this.assignmentsLinearLayout);
+                break;
+            default: break;
+        }
+
+        return false;
     }
 
 

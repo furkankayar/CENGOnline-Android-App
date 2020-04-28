@@ -9,7 +9,7 @@ public abstract class AbstractPost implements Postable, Editable, Serializable {
     protected String postedBy;
     private MyTimestamp postedAt;
     private String body;
-    private String editedAt;
+    private MyTimestamp editedAt;
     protected String editedBy;
 
     public AbstractPost(){
@@ -39,7 +39,7 @@ public abstract class AbstractPost implements Postable, Editable, Serializable {
     }
 
     @Override
-    public String getEditedAt(){
+    public MyTimestamp getEditedAt(){
         return this.editedAt;
     }
 
@@ -59,7 +59,7 @@ public abstract class AbstractPost implements Postable, Editable, Serializable {
     }
 
     @Override
-    public void setEditedAt(String editedAt){
+    public void setEditedAt(MyTimestamp editedAt){
         this.editedAt = editedAt;
     }
 

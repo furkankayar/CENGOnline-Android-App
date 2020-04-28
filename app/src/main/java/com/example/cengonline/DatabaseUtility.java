@@ -436,6 +436,98 @@ public class DatabaseUtility {
         });
     }
 
+    public void deleteCourseAnnouncement(final Course course, final Announcement announcement, final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                final DatabaseReference courseAnnouncementsRef = FirebaseDatabase.getInstance().getReference().child("courseAnnouncements");
+                Query query = courseAnnouncementsRef.orderByChild("courseKey").equalTo(course.getKey());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            CourseAnnouncements courseAnnouncements = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                courseAnnouncements = ds.getValue(CourseAnnouncements.class);
+                            }
+                            if(courseAnnouncements != null && courseAnnouncements.getAnnouncements() != null){
+                                courseAnnouncements.getAnnouncements().remove(announcement);
+                                courseAnnouncementsRef.child(courseAnnouncements.getKey()).setValue(courseAnnouncements);
+                                callback.onSuccess("You deleted announcement successfully!");
+                            }
+                            else{
+                                callback.onFailed("Something went wrong!");
+                            }
+                        }
+                        else{
+                            callback.onFailed("Something went wrong!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("Something went wrong!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                callback.onFailed("Something went wrong!");
+            }
+        });
+    }
+
+    public void updateCourseAnnouncement(final Course course, final Announcement announcement, final String newBody, final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                final DatabaseReference courseAnnouncementsRef = FirebaseDatabase.getInstance().getReference().child("courseAnnouncements");
+                Query query = courseAnnouncementsRef.orderByChild("courseKey").equalTo(course.getKey());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            CourseAnnouncements courseAnnouncements = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                courseAnnouncements = ds.getValue(CourseAnnouncements.class);
+                            }
+                            if(courseAnnouncements != null && courseAnnouncements.getAnnouncements() != null){
+                                courseAnnouncements.getAnnouncements().remove(announcement);
+                                announcement.setBody(newBody);
+                                announcement.setEditedBy(user.getKey());
+                                announcement.setEditedAt(new MyTimestamp(new Date()));
+                                courseAnnouncements.getAnnouncements().add(announcement);
+                                courseAnnouncementsRef.child(courseAnnouncements.getKey()).setValue(courseAnnouncements);
+                                callback.onSuccess("You updated announcement successfully!");
+                            }
+                            else{
+                                callback.onFailed("Something went wrong!");
+                            }
+                        }
+                        else{
+                            callback.onFailed("Something went wrong!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("Something went wrong!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                callback.onFailed("Something went wrong!");
+            }
+        });
+    }
+
     public static DatabaseUtility getInstance(){
         if(instance == null){
             instance = new DatabaseUtility();
