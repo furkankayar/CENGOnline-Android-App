@@ -17,6 +17,11 @@
 
         </activity>
         <activity
+            android:name=".ui.course.AnnouncementFragment"
+            android:theme="@style/MyMaterialTheme">
+
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/MyMaterialTheme">

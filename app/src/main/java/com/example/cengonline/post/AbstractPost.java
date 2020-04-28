@@ -1,14 +1,13 @@
 package com.example.cengonline.post;
 
 
-import com.example.cengonline.model.User;
-
 import java.io.Serializable;
+import com.example.cengonline.model.MyTimestamp;
 
 public abstract class AbstractPost implements Postable, Editable, Serializable {
 
     protected String postedBy;
-    private String postedAt;
+    private MyTimestamp postedAt;
     private String body;
     private String editedAt;
     protected String editedBy;
@@ -17,7 +16,7 @@ public abstract class AbstractPost implements Postable, Editable, Serializable {
 
     }
 
-    public AbstractPost(String postedBy, String postedAt, String body){
+    public AbstractPost(String postedBy, MyTimestamp postedAt, String body){
         this.postedAt = postedAt;
         this.postedBy = postedBy;
         this.body = body;
@@ -30,7 +29,7 @@ public abstract class AbstractPost implements Postable, Editable, Serializable {
     }
 
     @Override
-    public String getPostedAt(){
+    public MyTimestamp getPostedAt(){
         return this.postedAt;
     }
 
@@ -50,7 +49,7 @@ public abstract class AbstractPost implements Postable, Editable, Serializable {
     }
 
     @Override
-    public void setPostedAt(String postedAt){
+    public void setPostedAt(MyTimestamp postedAt){
         this.postedAt = postedAt;
     }
 

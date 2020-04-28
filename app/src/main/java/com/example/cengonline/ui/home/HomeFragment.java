@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
+import com.example.cengonline.Utility;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
 import com.example.cengonline.ui.course.CourseFragment;
@@ -101,6 +102,8 @@ public class HomeFragment extends Fragment {
 
     private void drawCourse(LinearLayout scroll, final Course course, User teacher){
 
+        Utility util = Utility.getInstance();
+
         ImageView imageView = new ImageView(getActivity());
         imageView.setAdjustViewBounds(true);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -115,8 +118,8 @@ public class HomeFragment extends Fragment {
 
         TextView courseName = new TextView(getActivity());
         LinearLayout.LayoutParams courseNameLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        courseNameLayoutParams.leftMargin = DPtoPX(20);
-        courseNameLayoutParams.topMargin = DPtoPX(15);
+        courseNameLayoutParams.leftMargin = util.DPtoPX(20, getActivity());
+        courseNameLayoutParams.topMargin = util.DPtoPX(15, getActivity());
         courseName.setLayoutParams(courseNameLayoutParams);
         courseName.setLines(1);
         courseName.setEllipsize(TextUtils.TruncateAt.END);
@@ -125,8 +128,8 @@ public class HomeFragment extends Fragment {
 
         TextView courseSection = new TextView(getActivity());
         LinearLayout.LayoutParams courseSectionLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        courseSectionLayoutParams.leftMargin = DPtoPX(20);
-        courseSection.setLayoutParams(courseNameLayoutParams);
+        courseSectionLayoutParams.leftMargin = util.DPtoPX(20, getActivity());
+        courseSection.setLayoutParams(courseSectionLayoutParams);
         courseSection.setTextAppearance(getActivity(), R.style.fontForCourseSectionOnCard);
         courseSection.setLines(1);
         courseSection.setEllipsize(TextUtils.TruncateAt.END);
@@ -134,10 +137,10 @@ public class HomeFragment extends Fragment {
 
         TextView courseTeacher = new TextView(getActivity());
         LinearLayout.LayoutParams courseTeacherLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        courseTeacherLayoutParams.leftMargin = DPtoPX(20);
-        courseTeacherLayoutParams.bottomMargin = DPtoPX(15);
-        courseTeacherLayoutParams.topMargin = DPtoPX(60);
-        courseTeacher.setLayoutParams(courseNameLayoutParams);
+        courseTeacherLayoutParams.leftMargin = util.DPtoPX(20, getActivity());
+        courseTeacherLayoutParams.bottomMargin = util.DPtoPX(15, getActivity());
+        courseTeacherLayoutParams.topMargin = util.DPtoPX(60, getActivity());
+        courseTeacher.setLayoutParams(courseTeacherLayoutParams);
         courseTeacher.setLines(1);
         courseTeacher.setEllipsize(TextUtils.TruncateAt.END);
         courseTeacher.setTextAppearance(getActivity(), R.style.fontForCourseTeacherOnCard);
@@ -150,13 +153,13 @@ public class HomeFragment extends Fragment {
 
         CardView cardView = new CardView(getActivity());
         LinearLayout.LayoutParams cardViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        cardViewLayoutParams.topMargin = DPtoPX(7);
-        cardViewLayoutParams.leftMargin = DPtoPX(13);
-        cardViewLayoutParams.rightMargin = DPtoPX(13);
+        cardViewLayoutParams.topMargin = util.DPtoPX(7, getActivity());
+        cardViewLayoutParams.leftMargin = util.DPtoPX(13, getActivity());
+        cardViewLayoutParams.rightMargin = util.DPtoPX(13, getActivity());
         cardView.setLayoutParams(cardViewLayoutParams);
         cardView.setClickable(true);
         cardView.setForeground(getSelectedItemDrawable());
-        cardView.setRadius(DPtoPX(8));
+        cardView.setRadius(util.DPtoPX(8, getActivity()));
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,7 +185,5 @@ public class HomeFragment extends Fragment {
         return selectedItemDrawable;
     }
 
-    private int DPtoPX(int dps){
-        return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, getActivity().getResources().getDisplayMetrics()));
-    }
+
 }

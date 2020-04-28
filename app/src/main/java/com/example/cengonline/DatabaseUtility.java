@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.EnrolledCourses;
+import com.example.cengonline.model.MyTimestamp;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Announcement;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,11 +24,13 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.lang.reflect.Array;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.UUID;
 
 public class DatabaseUtility {
@@ -365,7 +368,7 @@ public class DatabaseUtility {
                                     announcements = ds.getValue(CourseAnnouncements.class);
                                 }
                                 if(announcements != null && announcements.getAnnouncements() != null){
-                                    Announcement announcement = new Announcement(user.getKey(), new Date().toString(), announcementBody);
+                                    Announcement announcement = new Announcement(user.getKey(), new MyTimestamp(new Date()), announcementBody);
                                     announcements.getAnnouncements().add(announcement);
                                     ref.child(announcements.getKey()).setValue(announcements);
                                     callback.onSuccess("You have posted an announcement!");
@@ -377,7 +380,7 @@ public class DatabaseUtility {
                             else{
 
                                 DatabaseReference newVal = ref.push();
-                                Announcement announcement = new Announcement(user.getKey(), new Date().toString(), announcementBody);
+                                Announcement announcement = new Announcement(user.getKey(), new MyTimestamp(new Date()), announcementBody);
                                 CourseAnnouncements announcements = new CourseAnnouncements(newVal.getKey(), Arrays.asList(announcement), course.getKey());
                                 newVal.setValue(announcements);
                                 callback.onSuccess("You have posted an announcement!");
@@ -402,6 +405,36 @@ public class DatabaseUtility {
         });
     }
 
+    public void getCourseAnnouncements(final Course course, final DatabaseCallback callback){
+
+        DatabaseReference announcementsRef = FirebaseDatabase.getInstance().getReference().child("courseAnnouncements");
+        Query query = announcementsRef.orderByChild("courseKey").equalTo(course.getKey());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    CourseAnnouncements ca = null;
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        ca = ds.getValue(CourseAnnouncements.class);
+                    }
+                    if(ca != null && ca.getAnnouncements() != null){
+                        callback.onSuccess(ca);
+                    }
+                    else{
+                        callback.onFailed("Not found!");
+                    }
+                }
+                else{
+                    callback.onFailed("Not found!");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFailed("Error!");
+            }
+        });
+    }
 
     public static DatabaseUtility getInstance(){
         if(instance == null){

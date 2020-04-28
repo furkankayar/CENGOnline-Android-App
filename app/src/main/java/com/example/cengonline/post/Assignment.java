@@ -1,8 +1,10 @@
 package com.example.cengonline.post;
 
+import com.example.cengonline.model.MyTimestamp;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.AbstractPost;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public class Assignment extends AbstractPost {
@@ -15,7 +17,7 @@ public class Assignment extends AbstractPost {
         super();
     }
 
-    public Assignment(String title, String dueDate, List<User> assignedStudents, String postedBy, String postedAt, String body){
+    public Assignment(String title, String dueDate, List<User> assignedStudents, String postedBy, MyTimestamp postedAt, String body){
         super(postedBy, postedAt, body);
         this.title = title;
         this.dueDate = dueDate;
