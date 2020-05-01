@@ -10,18 +10,16 @@ import java.util.List;
 public class Assignment extends AbstractPost {
 
     private String title;
-    private String dueDate;
-    private List<User> assignedStudents;
+    private MyTimestamp dueDate;
 
     public Assignment(){
         super();
     }
 
-    public Assignment(String title, String dueDate, List<User> assignedStudents, String postedBy, MyTimestamp postedAt, String body){
+    public Assignment(String title, MyTimestamp dueDate, String postedBy, MyTimestamp postedAt, String body){
         super(postedBy, postedAt, body);
         this.title = title;
         this.dueDate = dueDate;
-        this.assignedStudents = assignedStudents;
     }
 
     public String getTitle() {
@@ -32,27 +30,14 @@ public class Assignment extends AbstractPost {
         this.title = title;
     }
 
-    public String getDueDate() {
+    public MyTimestamp getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(String dueDate) {
+    public void setDueDate(MyTimestamp dueDate) {
         this.dueDate = dueDate;
     }
 
-    public void setAssignedStudents(List<User> assignedStudents){
-        this.assignedStudents = assignedStudents;
-    }
 
-    public List<User> getAssignedStudents(){
-        return this.assignedStudents;
-    }
-
-    public List<User> addAssignedStudents(User student){
-        if(student.getRoles().contains(User.Role.STUDENT))
-            this.assignedStudents.add(student);
-
-        return this.assignedStudents;
-    }
 
 }

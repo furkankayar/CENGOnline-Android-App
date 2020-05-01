@@ -8,10 +8,12 @@ import androidx.annotation.Nullable;
 
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
+import com.example.cengonline.model.CourseAssignments;
 import com.example.cengonline.model.EnrolledCourses;
 import com.example.cengonline.model.MyTimestamp;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Announcement;
+import com.example.cengonline.post.Assignment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -524,6 +526,60 @@ public class DatabaseUtility {
             @Override
             public void onFailed(String message) {
                 callback.onFailed("Something went wrong!");
+            }
+        });
+    }
+
+    public void newCourseAssignment(final Course course, final Assignment assignment, final DatabaseCallback callback ){
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("courseAssignments");
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                assignment.setPostedBy(user.getKey());
+                if(user.getRoles().contains(User.Role.TEACHER) && course.getTeacherList().contains(user.getKey())){
+                    Query query = ref.orderByChild("courseKey").equalTo(course.getKey());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                CourseAssignments assignments = null;
+                                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                    assignments = ds.getValue(CourseAssignments.class);
+                                }
+                                if(assignments != null && assignments.getAssignments() != null){
+                                    assignments.getAssignments().add(assignment);
+                                    ref.child(assignments.getKey()).setValue(assignments);
+                                    callback.onSuccess("You have posted an assignment!");
+                                }
+                                else{
+                                    callback.onFailed("An error occurred while posting assignment!");
+                                }
+                            }
+                            else{
+                                DatabaseReference newVal = ref.push();
+                                CourseAssignments assignments = new CourseAssignments(Arrays.asList(assignment), course.getKey(), newVal.getKey());
+                                newVal.setValue(assignments);
+                                callback.onSuccess("You have posted an assignment!");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            callback.onFailed("An error occurred while posting assignment!");
+                        }
+                    });
+                }
+                else{
+                    callback.onFailed("You are not authorized to post assignment!");
+                }
+            }
+
+            @Override
+            public void onFailed(String message) {
+
             }
         });
     }

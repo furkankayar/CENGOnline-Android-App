@@ -24,8 +24,10 @@ import com.example.cengonline.Utility;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.User;
+import com.example.cengonline.post.AbstractPost;
 import com.example.cengonline.post.Announcement;
 import com.example.cengonline.ui.dialog.NewAnnouncementDialog;
+import com.example.cengonline.ui.dialog.NewAssignmentDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -43,14 +45,17 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
     private ImageView courseImage;
     private Course course;
     private Toolbar toolbar;
-    private TextView shareImageText;
-    private CardView shareCard;
+    private TextView shareAnnouncementImageText;
+    private TextView shareAssignmentImageText;
+    private CardView shareAnnouncementCard;
+    private CardView shareAssignmentCard;
     private LinearLayout scrollLinearLayout;
     private List<CardView> announcementCards;
-    private List<User> users;
-    private List<Announcement> announcements;
-    private List<CardModel> cardModels;
+    private List<CardView> assignmentCards;
+    private List<CardModel> announcementCardModels;
+    private List<CardModel> assignmentCardModels;
     private BottomNavigationView navigationView;
+    private LinearLayout announcementsLinearLayout;
     private LinearLayout assignmentsLinearLayout;
 
 
@@ -59,18 +64,21 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_course);
         this.announcementCards = new ArrayList<CardView>();
-        this.users = new ArrayList<User>();
-        this.cardModels = new ArrayList<CardModel>();
-        this.announcements = new ArrayList<Announcement>();
+        this.assignmentCards = new ArrayList<CardView>();
+        this.announcementCardModels = new ArrayList<CardModel>();
+        this.assignmentCardModels = new ArrayList<CardModel>();
         this.courseName = findViewById(R.id.course_fragment_course_name);
         this.courseSection = findViewById(R.id.course_fragment_course_section);
         this.courseImage = findViewById(R.id.course_fragment_course_image);
         this.courseCode = findViewById(R.id.course_fragment_course_code);
         this.toolbar = findViewById(R.id.course_toolbar);
-        this.shareImageText = findViewById(R.id.share_image_text);
-        this.shareCard = findViewById(R.id.share_card);
+        this.shareAnnouncementImageText = findViewById(R.id.share_announcement_image_text);
+        this.shareAssignmentImageText = findViewById(R.id.share_assignment_image_text);
+        this.shareAnnouncementCard = findViewById(R.id.share_announcement_card);
+        this.shareAssignmentCard = findViewById(R.id.share_assignment_card);
         this.scrollLinearLayout = findViewById(R.id.course_fragment_scroll_linear_layout);
         this.navigationView = findViewById(R.id.bottom_navigation);
+        this.announcementsLinearLayout = findViewById(R.id.announcements_linear_layout);
         this.assignmentsLinearLayout = findViewById(R.id.assignments_linear_layout);
 
         this.navigationView.setOnNavigationItemSelectedListener(this);
@@ -94,11 +102,14 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
                 public void onSuccess(Object result) {
                     User user = (User)result;
                     if(course.getTeacherList() != null && course.getTeacherList().contains(user.getKey())){
-                        shareImageText.setText(user.getDisplayName().toUpperCase().substring(0, 1));
-                        shareCard.setVisibility(View.VISIBLE);
+                        shareAnnouncementImageText.setText(user.getDisplayName().toUpperCase().substring(0, 1));
+                        shareAssignmentImageText.setText(user.getDisplayName().toUpperCase().substring(0, 1));
+                        shareAnnouncementCard.setVisibility(View.VISIBLE);
+                        shareAssignmentCard.setVisibility(View.VISIBLE);
                     }
                     else{
-                        scrollLinearLayout.removeView(shareCard);
+                        announcementsLinearLayout.removeView(shareAnnouncementCard);
+                        assignmentsLinearLayout.removeView(shareAssignmentCard);
                     }
                 }
 
@@ -108,7 +119,8 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
                 }
             });
 
-            this.shareCard.setOnClickListener(this);
+            this.shareAnnouncementCard.setOnClickListener(this);
+            this.shareAssignmentCard.setOnClickListener(this);
             DatabaseUtility.getInstance().getCourseAnnouncements(this.course, this);
 
         }
@@ -119,8 +131,19 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        NewAnnouncementDialog newAD = new NewAnnouncementDialog(this, this.course);
-        newAD.show();
+
+        int id = v.getId();
+        switch (id){
+            case R.id.share_announcement_card:
+                NewAnnouncementDialog newAnD = new NewAnnouncementDialog(this, this.course);
+                newAnD.show();
+                break;
+            case R.id.share_assignment_card:
+                NewAssignmentDialog newAsD = new NewAssignmentDialog(this, this.course);
+                newAsD.show();
+                break;
+        }
+
     }
 
     @Override
@@ -250,7 +273,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         dateTextLayoutParams.leftMargin = util.DPtoPX(20, this);
         dateText.setLayoutParams(dateTextLayoutParams);
         dateText.setTextAppearance(this, R.style.fontForDateOnCard);
-        dateText.setText(cardModel.getAnnouncement().getPostedAt().toString());
+        dateText.setText(cardModel.getPost().getPostedAt().toString());
 
 
         LinearLayout middleLinearLayout = new LinearLayout(this);
@@ -271,7 +294,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         bodyText.setTextAppearance(this, R.style.fontForBodyTextOnCard);
         bodyText.setLines(3);
         bodyText.setEllipsize(TextUtils.TruncateAt.END);
-        bodyText.setText(cardModel.getAnnouncement().getBody());
+        bodyText.setText(cardModel.getPost().getBody());
 
 
         LinearLayout outerLinearLayout = new LinearLayout(this);
@@ -298,14 +321,98 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToAnnouncement(cardModel.getUser(), cardModel.getAnnouncement());
+                goToAnnouncement(cardModel.getUser(), (Announcement) cardModel.getPost());
             }
         });
 
         cardView.addView(outerLinearLayout, outerLinearLayoutLayoutParams);
 
         this.announcementCards.add(cardView);
-        this.assignmentsLinearLayout.addView(cardView, cardViewLayoutParams);
+        this.announcementsLinearLayout.addView(cardView, cardViewLayoutParams);
+    }
+
+    private void createAssignmentCard(final CardModel cardModel){
+        Utility util = Utility.getInstance();
+
+        TextView imageText = new TextView(this);
+        LinearLayout.LayoutParams imageTextLayoutParams = new LinearLayout.LayoutParams(util.DPtoPX(40, this), util.DPtoPX(40, this));
+        imageText.setLayoutParams(imageTextLayoutParams);
+        imageText.setBackgroundResource(R.drawable.ic_assignment_icon);
+        imageText.setGravity(Gravity.CENTER);
+
+        LinearLayout insideLinearLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams insideLinearLayoutLayoutParams =  new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        insideLinearLayout.setLayoutParams(insideLinearLayoutLayoutParams);
+        insideLinearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        TextView displayNameText = new TextView(this);
+        LinearLayout.LayoutParams displayNameTextLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        displayNameTextLayoutParams.leftMargin = util.DPtoPX(20, this);
+        displayNameText.setLayoutParams(displayNameTextLayoutParams);
+        displayNameText.setTextAppearance(this, R.style.fontForDisplayNameOnCard);
+        displayNameText.setText(cardModel.getUser().getDisplayName());
+
+        TextView dateText = new TextView(this);
+        LinearLayout.LayoutParams dateTextLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        dateTextLayoutParams.leftMargin = util.DPtoPX(20, this);
+        dateText.setLayoutParams(dateTextLayoutParams);
+        dateText.setTextAppearance(this, R.style.fontForDateOnCard);
+        dateText.setText(cardModel.getPost().getPostedAt().toString());
+
+
+        LinearLayout middleLinearLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams middleLinarLayoutLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        middleLinarLayoutLayoutParams.topMargin = util.DPtoPX(10, this);
+        middleLinarLayoutLayoutParams.bottomMargin = util.DPtoPX(10, this);
+        middleLinarLayoutLayoutParams.leftMargin = util.DPtoPX(15, this);
+        middleLinearLayout.setLayoutParams(middleLinarLayoutLayoutParams);
+        middleLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        middleLinearLayout.setGravity(Gravity.CENTER);
+
+        TextView bodyText = new TextView(this);
+        LinearLayout.LayoutParams bodyTextLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        bodyTextLayoutParams.leftMargin = util.DPtoPX(15, this);
+        bodyTextLayoutParams.rightMargin = util.DPtoPX(15, this);
+        bodyTextLayoutParams.topMargin = util.DPtoPX(6, this);
+        bodyTextLayoutParams.bottomMargin = util.DPtoPX(10, this);
+        bodyText.setTextAppearance(this, R.style.fontForBodyTextOnCard);
+        bodyText.setLines(3);
+        bodyText.setEllipsize(TextUtils.TruncateAt.END);
+        bodyText.setText(cardModel.getPost().getBody());
+
+
+        LinearLayout outerLinearLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams outerLinearLayoutLayoutParams =  new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        outerLinearLayout.setLayoutParams(outerLinearLayoutLayoutParams);
+        outerLinearLayout.setOrientation(LinearLayout.VERTICAL);
+
+
+        insideLinearLayout.addView(displayNameText, displayNameTextLayoutParams);
+        insideLinearLayout.addView(dateText, dateTextLayoutParams);
+        middleLinearLayout.addView(imageText, imageTextLayoutParams);
+        middleLinearLayout.addView(insideLinearLayout, insideLinearLayoutLayoutParams);
+        outerLinearLayout.addView(middleLinearLayout, middleLinarLayoutLayoutParams);
+        outerLinearLayout.addView(bodyText, bodyTextLayoutParams);
+
+        CardView cardView = new CardView(this);
+        LinearLayout.LayoutParams cardViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        cardViewLayoutParams.bottomMargin = util.DPtoPX(7, this);
+        cardViewLayoutParams.leftMargin = util.DPtoPX(8, this);
+        cardViewLayoutParams.rightMargin = util.DPtoPX(8, this);
+        cardView.setLayoutParams(cardViewLayoutParams);
+        cardView.setClickable(true);
+        cardView.setRadius(util.DPtoPX(8, this));
+        cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToAnnouncement(cardModel.getUser(), (Announcement)cardModel.getPost());
+            }
+        });
+
+        cardView.addView(outerLinearLayout, outerLinearLayoutLayoutParams);
+
+        this.announcementCards.add(cardView);
+        this.announcementsLinearLayout.addView(cardView, cardViewLayoutParams);
     }
 
     private void goToAnnouncement(User user, Announcement announcement){
@@ -318,9 +425,9 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
     private void printAnnouncementCardModels(){
 
-        Collections.sort(cardModels);
+        Collections.sort(announcementCardModels);
 
-        for(CardModel cm : this.cardModels){
+        for(CardModel cm : this.announcementCardModels){
             createAnnouncementCard(cm);
         }
     }
@@ -330,7 +437,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
     public void onSuccess(Object result) {
         CourseAnnouncements ca = (CourseAnnouncements)result;
 
-        this.cardModels = new ArrayList<CardModel>();
+        this.announcementCardModels = new ArrayList<CardModel>();
 
         for(final Announcement an : ca.getAnnouncements()){
 
@@ -339,9 +446,9 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
                 public void onSuccess(Object result) {
                     User user = (User)result;
                     for(CardView cv : announcementCards){
-                        assignmentsLinearLayout.removeView(cv);
+                        announcementsLinearLayout.removeView(cv);
                     }
-                    cardModels.add(new CardModel(user, an));
+                    announcementCardModels.add(new CardModel(user, an));
                     printAnnouncementCardModels();
                 }
 
@@ -366,11 +473,12 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
         switch (itemId){
             case R.id.navigation_announcements:
-                if(this.assignmentsLinearLayout.getParent() == null)
-                    this.scrollLinearLayout.addView(this.assignmentsLinearLayout);
+                this.assignmentsLinearLayout.setVisibility(View.GONE);
+                this.announcementsLinearLayout.setVisibility(View.VISIBLE);
                 break;
             case R.id.navigation_assignments:
-                this.scrollLinearLayout.removeView(this.assignmentsLinearLayout);
+                this.assignmentsLinearLayout.setVisibility(View.VISIBLE);
+                this.announcementsLinearLayout.setVisibility(View.GONE);
                 break;
             default: break;
         }
@@ -380,20 +488,20 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
 
     private class CardModel implements Comparable{
-        private Announcement announcement;
+        private AbstractPost post;
         private User user;
 
-        public CardModel(User user, Announcement announcement){
+        public CardModel(User user, AbstractPost post){
             this.user = user;
-            this.announcement = announcement;
+            this.post = post;
         }
 
-        public Announcement getAnnouncement() {
-            return announcement;
+        public AbstractPost getPost() {
+            return post;
         }
 
-        public void setAnnouncement(Announcement announcement) {
-            this.announcement = announcement;
+        public void setAnnouncement(AbstractPost post) {
+            this.post = post;
         }
 
         public User getUser() {
@@ -407,7 +515,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         @Override
         public int compareTo(Object o) {
             CardModel o2 = (CardModel)o;
-            return this.getAnnouncement().getPostedAt().compareTo(o2.getAnnouncement().getPostedAt()) * -1;
+            return this.getPost().getPostedAt().compareTo(o2.getPost().getPostedAt()) * -1;
         }
     }
 }

@@ -1,15 +1,9 @@
 package com.example.cengonline.model;
 
 
-
-import android.util.Log;
-
 import java.io.Serializable;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.TimeZone;
-
 
 public class MyTimestamp extends Timestamp implements Serializable {
 
