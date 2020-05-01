@@ -23,9 +23,11 @@ import com.example.cengonline.R;
 import com.example.cengonline.Utility;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
+import com.example.cengonline.model.CourseAssignments;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.AbstractPost;
 import com.example.cengonline.post.Announcement;
+import com.example.cengonline.post.Assignment;
 import com.example.cengonline.ui.dialog.NewAnnouncementDialog;
 import com.example.cengonline.ui.dialog.NewAssignmentDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -122,6 +124,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
             this.shareAnnouncementCard.setOnClickListener(this);
             this.shareAssignmentCard.setOnClickListener(this);
             DatabaseUtility.getInstance().getCourseAnnouncements(this.course, this);
+            DatabaseUtility.getInstance().getCourseAssignments(this.course, this);
 
         }
         else{
@@ -337,7 +340,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         TextView imageText = new TextView(this);
         LinearLayout.LayoutParams imageTextLayoutParams = new LinearLayout.LayoutParams(util.DPtoPX(40, this), util.DPtoPX(40, this));
         imageText.setLayoutParams(imageTextLayoutParams);
-        imageText.setBackgroundResource(R.drawable.ic_assignment_icon);
+        imageText.setBackgroundResource(R.drawable.assignment);
         imageText.setGravity(Gravity.CENTER);
 
         LinearLayout insideLinearLayout = new LinearLayout(this);
@@ -350,7 +353,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         displayNameTextLayoutParams.leftMargin = util.DPtoPX(20, this);
         displayNameText.setLayoutParams(displayNameTextLayoutParams);
         displayNameText.setTextAppearance(this, R.style.fontForDisplayNameOnCard);
-        displayNameText.setText(cardModel.getUser().getDisplayName());
+        displayNameText.setText(cardModel.getUser().getDisplayName() + " posted a new assignment: " + ((Assignment)cardModel.getPost()).getTitle());
 
         TextView dateText = new TextView(this);
         LinearLayout.LayoutParams dateTextLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -369,17 +372,6 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         middleLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
         middleLinearLayout.setGravity(Gravity.CENTER);
 
-        TextView bodyText = new TextView(this);
-        LinearLayout.LayoutParams bodyTextLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        bodyTextLayoutParams.leftMargin = util.DPtoPX(15, this);
-        bodyTextLayoutParams.rightMargin = util.DPtoPX(15, this);
-        bodyTextLayoutParams.topMargin = util.DPtoPX(6, this);
-        bodyTextLayoutParams.bottomMargin = util.DPtoPX(10, this);
-        bodyText.setTextAppearance(this, R.style.fontForBodyTextOnCard);
-        bodyText.setLines(3);
-        bodyText.setEllipsize(TextUtils.TruncateAt.END);
-        bodyText.setText(cardModel.getPost().getBody());
-
 
         LinearLayout outerLinearLayout = new LinearLayout(this);
         LinearLayout.LayoutParams outerLinearLayoutLayoutParams =  new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -392,7 +384,6 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         middleLinearLayout.addView(imageText, imageTextLayoutParams);
         middleLinearLayout.addView(insideLinearLayout, insideLinearLayoutLayoutParams);
         outerLinearLayout.addView(middleLinearLayout, middleLinarLayoutLayoutParams);
-        outerLinearLayout.addView(bodyText, bodyTextLayoutParams);
 
         CardView cardView = new CardView(this);
         LinearLayout.LayoutParams cardViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -405,14 +396,14 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToAnnouncement(cardModel.getUser(), (Announcement)cardModel.getPost());
+                goToAssignment(cardModel.getUser(), (Assignment) cardModel.getPost());
             }
         });
 
         cardView.addView(outerLinearLayout, outerLinearLayoutLayoutParams);
 
-        this.announcementCards.add(cardView);
-        this.announcementsLinearLayout.addView(cardView, cardViewLayoutParams);
+        this.assignmentCards.add(cardView);
+        this.assignmentsLinearLayout.addView(cardView, cardViewLayoutParams);
     }
 
     private void goToAnnouncement(User user, Announcement announcement){
@@ -420,6 +411,15 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         intent.putExtra("course", course);
         intent.putExtra("user", user);
         intent.putExtra("announcement", announcement);
+        startActivity(intent);
+
+    }
+
+    private void goToAssignment(User user, Assignment assignment){
+        Intent intent = new Intent(this, AssignmentFragment.class);
+        intent.putExtra("course", course);
+        intent.putExtra("user", user);
+        intent.putExtra("assignment", assignment);
         startActivity(intent);
     }
 
@@ -432,37 +432,81 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private void printAssignmentCardModels(){
+
+        Collections.sort(assignmentCardModels);
+
+        for(CardModel cm : this.assignmentCardModels){
+            createAssignmentCard(cm);
+        }
+    }
+
     //DATABASE CALLBACK
     @Override
     public void onSuccess(Object result) {
-        CourseAnnouncements ca = (CourseAnnouncements)result;
 
-        this.announcementCardModels = new ArrayList<CardModel>();
+        if(result.getClass() == CourseAnnouncements.class){
+            CourseAnnouncements ca = (CourseAnnouncements)result;
 
-        for(final Announcement an : ca.getAnnouncements()){
+            this.announcementCardModels = new ArrayList<CardModel>();
 
-            DatabaseUtility.getInstance().getUserWithKey(an.getPostedBy(), new DatabaseCallback() {
-                @Override
-                public void onSuccess(Object result) {
-                    User user = (User)result;
-                    for(CardView cv : announcementCards){
-                        announcementsLinearLayout.removeView(cv);
+            for(final Announcement an : ca.getAnnouncements()){
+
+                DatabaseUtility.getInstance().getUserWithKey(an.getPostedBy(), new DatabaseCallback() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        User user = (User)result;
+                        for(CardView cv : announcementCards){
+                            announcementsLinearLayout.removeView(cv);
+                        }
+                        announcementCardModels.add(new CardModel(user, an));
+                        printAnnouncementCardModels();
                     }
-                    announcementCardModels.add(new CardModel(user, an));
-                    printAnnouncementCardModels();
-                }
 
-                @Override
-                public void onFailed(String message) {
+                    @Override
+                    public void onFailed(String message) {
 
-                }
-            });
+                    }
+                });
+            }
+        }
+        else if(result.getClass() == CourseAssignments.class){
+            CourseAssignments ca = (CourseAssignments)result;
+
+            this.assignmentCardModels = new ArrayList<CardModel>();
+
+            for(final Assignment as : ca.getAssignments()){
+
+                DatabaseUtility.getInstance().getUserWithKey(as.getPostedBy(), new DatabaseCallback() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        User user = (User)result;
+                        for(CardView cv : assignmentCards){
+                            assignmentsLinearLayout.removeView(cv);
+                        }
+                        assignmentCardModels.add(new CardModel(user, as));
+                        printAssignmentCardModels();
+                    }
+
+                    @Override
+                    public void onFailed(String message) {
+
+                    }
+                });
+            }
+        }
+        else if(result.getClass() == java.lang.String.class && ((String)result).equals("Announcements empty")){
+            for(CardView cv : announcementCards){
+                announcementsLinearLayout.removeView(cv);
+            }
+            announcementCardModels = new ArrayList<CardModel>();
+            printAnnouncementCardModels();
         }
     }
 
     @Override
     public void onFailed(String message) {
-        makeToastMessage(message);
+
     }
 
     @Override

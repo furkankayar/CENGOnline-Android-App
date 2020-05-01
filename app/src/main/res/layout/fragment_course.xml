@@ -149,6 +149,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:animateLayoutChanges="true"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:orientation="vertical"
@@ -206,9 +207,9 @@
         android:backgroundTint="#FFFFFF"
         android:backgroundTintMode="src_in"
         app:backgroundTint="#F3FFFFFF"
-        app:itemIconTint="#312C2C"
+        app:itemIconTint="@color/bnv_tab_item_foreground"
         app:itemRippleColor="#1E96F6"
-        app:itemTextColor="#312C2C"
+        app:itemTextColor="@color/bnv_tab_item_foreground"
         app:labelVisibilityMode="auto"
         app:menu="@menu/bottom_menu" />
 

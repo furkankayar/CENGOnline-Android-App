@@ -11,6 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".ui.course.AssignmentFragment"
+            android:theme="@style/MyMaterialTheme">
+
+        </activity>
         <activity
             android:name=".ui.course.CourseFragment"
             android:theme="@style/MyMaterialTheme">

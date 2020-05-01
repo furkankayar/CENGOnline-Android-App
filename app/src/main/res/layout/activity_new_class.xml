@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:gravity="center"
-    >
+    android:gravity="center">
 
     <TextView
         android:layout_width="wrap_content"
@@ -21,12 +20,14 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_marginTop="40dp"
+        app:hintTextColor="#1D45C0"
         >
         <EditText
             android:id="@+id/new_class_class_name"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="Class name"
+            android:theme="@style/EditTextStyle2"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -35,12 +36,14 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_marginTop="10dp"
+        app:hintTextColor="#1D45C0"
         >
         <EditText
             android:id="@+id/new_class_class_section"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="Class section"
+            android:theme="@style/EditTextStyle2"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,12 +52,14 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_marginTop="10dp"
+        app:hintTextColor="#1D45C0"
         >
         <EditText
             android:id="@+id/new_class_class_subject"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="Class subject"
+            android:theme="@style/EditTextStyle2"
 
             />
     </com.google.android.material.textfield.TextInputLayout>

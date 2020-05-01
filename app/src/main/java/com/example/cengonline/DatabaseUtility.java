@@ -1,5 +1,6 @@
 package com.example.cengonline;
 
+import android.media.MediaPlayer;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -414,20 +415,15 @@ public class DatabaseUtility {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    CourseAnnouncements ca = null;
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        ca = ds.getValue(CourseAnnouncements.class);
-                    }
-                    if(ca != null && ca.getAnnouncements() != null){
-                        callback.onSuccess(ca);
-                    }
-                    else{
-                        callback.onFailed("Not found!");
-                    }
+                CourseAnnouncements ca = null;
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    ca = ds.getValue(CourseAnnouncements.class);
+                }
+                if(ca != null && ca.getAnnouncements() != null){
+                    callback.onSuccess(ca);
                 }
                 else{
-                    callback.onFailed("Not found!");
+                    callback.onSuccess("Announcements empty");
                 }
             }
 
@@ -456,8 +452,18 @@ public class DatabaseUtility {
                             }
                             if(courseAnnouncements != null && courseAnnouncements.getAnnouncements() != null){
                                 courseAnnouncements.getAnnouncements().remove(announcement);
-                                courseAnnouncementsRef.child(courseAnnouncements.getKey()).setValue(courseAnnouncements);
-                                callback.onSuccess("You deleted announcement successfully!");
+                                if(courseAnnouncements.getAnnouncements().isEmpty()){
+                                    courseAnnouncementsRef.child(courseAnnouncements.getKey()).removeValue(new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                            callback.onSuccess("You deleted announcement successfully!");
+                                        }
+                                    });
+                                }
+                                else{
+                                    courseAnnouncementsRef.child(courseAnnouncements.getKey()).setValue(courseAnnouncements);
+                                    callback.onSuccess("You deleted announcement successfully!");
+                                }
                             }
                             else{
                                 callback.onFailed("Something went wrong!");
@@ -583,6 +589,38 @@ public class DatabaseUtility {
             }
         });
     }
+
+    public void getCourseAssignments(final Course course, final DatabaseCallback callback){
+
+        DatabaseReference announcementsRef = FirebaseDatabase.getInstance().getReference().child("courseAssignments");
+        Query query = announcementsRef.orderByChild("courseKey").equalTo(course.getKey());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    CourseAssignments ca = null;
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        ca = ds.getValue(CourseAssignments.class);
+                    }
+                    if(ca != null && ca.getAssignments() != null){
+                        callback.onSuccess(ca);
+                    }
+                    else{
+                        callback.onFailed("Not found!");
+                    }
+                }
+                else{
+                    callback.onFailed("Not found!");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFailed("Error!");
+            }
+        });
+    }
+
 
     public static DatabaseUtility getInstance(){
         if(instance == null){

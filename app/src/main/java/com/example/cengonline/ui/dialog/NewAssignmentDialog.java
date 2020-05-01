@@ -114,7 +114,7 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
             this.assignmentDueEditText.setText(str);
         }
 
-        DatePickerDialog dpd = new DatePickerDialog(this.activity, new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog dpd = new DatePickerDialog(this.activity, R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 String date = ++month + "/" + dayOfMonth + "/" + year;
@@ -149,19 +149,19 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
 
         try{
             if(!picked.equals("")){
-                String[] pars = picked.split("\\.");
+                String[] pars = picked.split(":");
                 hour = Integer.parseInt(pars[0]);
                 minute = Integer.parseInt(pars[1]);
             }
         }
         catch(NumberFormatException | ArrayIndexOutOfBoundsException ex){
-            this.assignmentDueTimeEditText.setText("23.59");
+            this.assignmentDueTimeEditText.setText("23:59");
         }
 
-        TimePickerDialog tpd = new TimePickerDialog(this.activity, new TimePickerDialog.OnTimeSetListener() {
+        TimePickerDialog tpd = new TimePickerDialog(this.activity, R.style.DialogTheme, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                String time = String.format(Locale.ENGLISH,"%02d.%02d", hourOfDay, minute);
+                String time = String.format(Locale.ENGLISH,"%02d:%02d", hourOfDay, minute);
                 assignmentDueTimeEditText.setText(time);
                 assignmentDueTimeEditText.clearFocus();
             }
@@ -172,7 +172,7 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
             public void onCancel(DialogInterface dialog) {
                 dialog.dismiss();
                 if(assignmentDueTimeEditText.getText().toString().equals("")){
-                    assignmentDueTimeEditText.setText("23.59");
+                    assignmentDueTimeEditText.setText("23:59");
                 }
                 assignmentDueTimeEditText.clearFocus();
             }
@@ -209,18 +209,18 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
 
         try{
             String[] dues = due.split("/");
-            month = Integer.parseInt(dues[0]);
+            month = Integer.parseInt(dues[0]) - 1;
             day = Integer.parseInt(dues[1]);
             year = Integer.parseInt(dues[2]);
 
             if(!dueTime.equals("")){
-                String[] dueTimes = dueTime.split("\\.");
+                String[] dueTimes = dueTime.split("\\:");
                 hour = Integer.parseInt(dueTimes[0]);
                 minute = Integer.parseInt(dueTimes[1]);
             }
         }
         catch (ArrayIndexOutOfBoundsException | NumberFormatException | NullPointerException ex){
-            makeToastMessage("An error occurred!");
+            makeToastMessage(ex.getMessage());
             shareButton.setEnabled(true);
             return;
         }

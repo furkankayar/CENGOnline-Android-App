@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.course.AnnouncementFragment">
+    tools:context=".ui.course.AssignmentFragment">
 
 
 
@@ -42,54 +42,49 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:gravity="center">
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:text="N"
-                android:id="@+id/announcement_detail_profil"
-                android:background="@drawable/rounded_textview"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                android:textSize="24sp" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/assignment_due_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/announcement_detail_user"
-                    android:layout_marginLeft="15dp"
-                    android:text="Name Surname"
-                    android:textColor="#000000" />
+                    android:layout_marginTop="5dp"
+                    android:text="Apr 15"
+                    android:textColor="#E9000000"
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:id="@+id/assignment_title"
                     android:layout_width="match_parent"
-                    android:id="@+id/announcement_detail_date"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:text="Apr 15"
-                    android:layout_marginTop="5dp"
-                    android:textSize="12sp" />
+                    android:layout_marginTop="7dp"
+                    android:text="Assignment Title"
+                    android:textColor="#1D45C0"
+                    android:textSize="22sp" />
+
+
             </LinearLayout>
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:layout_marginTop="10dp"
-            android:background="@android:color/black" />
+            android:layout_marginRight="20dp"
+            android:background="#1D45C0" />
 
         <TextView
-            android:id="@+id/announcement_detail_body"
+            android:id="@+id/assignment_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="15dp"
             android:layout_marginRight="20dp"
-            android:text="Announcement"
+            android:text="Assignment Description"
             android:layout_marginBottom="20dp"
             android:textColor="#000000"
             android:textSize="15sp"

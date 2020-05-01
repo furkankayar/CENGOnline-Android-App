@@ -5,10 +5,10 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_announcements"
-            android:icon="@drawable/ic_home_classes"
+            android:icon="@drawable/ic_announcement_svgrepo_com"
             android:title="Announcements" />
         <item
-            android:icon="@drawable/ic_home_classes"
+            android:icon="@drawable/ic_assignment_icon"
             android:id="@+id/navigation_assignments"
             android:title="Assignments"/>
     </group>

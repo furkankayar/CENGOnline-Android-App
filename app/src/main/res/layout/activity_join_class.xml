@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:gravity="center"
-    >
+    android:gravity="center">
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,6 +27,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_marginTop="40dp"
+        app:hintTextColor="#1D45C0"
         >
         <EditText
             android:id="@+id/join_class_class_code"
@@ -35,6 +35,7 @@
             android:lines="1"
             android:layout_height="wrap_content"
             android:hint="Class code"
+            android:theme="@style/EditTextStyle2"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
