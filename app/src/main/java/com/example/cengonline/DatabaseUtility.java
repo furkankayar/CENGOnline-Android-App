@@ -597,20 +597,15 @@ public class DatabaseUtility {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    CourseAssignments ca = null;
-                    for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        ca = ds.getValue(CourseAssignments.class);
-                    }
-                    if(ca != null && ca.getAssignments() != null){
-                        callback.onSuccess(ca);
-                    }
-                    else{
-                        callback.onFailed("Not found!");
-                    }
+                CourseAssignments ca = null;
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    ca = ds.getValue(CourseAssignments.class);
+                }
+                if(ca != null && ca.getAssignments() != null){
+                    callback.onSuccess(ca);
                 }
                 else{
-                    callback.onFailed("Not found!");
+                    callback.onSuccess("Assignments empty");
                 }
             }
 
@@ -621,6 +616,52 @@ public class DatabaseUtility {
         });
     }
 
+    public void updateCourseAssignments(final Course course, final Assignment assignment, final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                final DatabaseReference couseAssignmentsRef = FirebaseDatabase.getInstance().getReference().child("courseAssignments");
+                Query query = couseAssignmentsRef.orderByChild("courseKey").equalTo(course.getKey());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            CourseAssignments courseAssignments = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                courseAssignments = ds.getValue(CourseAssignments.class);
+                            }
+                            if(courseAssignments != null && courseAssignments.getAssignments() != null){
+                                courseAssignments.getAssignments().remove(assignment);
+                                assignment.setEditedBy(user.getKey());
+                                assignment.setEditedAt(new MyTimestamp(new Date()));
+                                courseAssignments.getAssignments().add(assignment);
+                                couseAssignmentsRef.child(courseAssignments.getKey()).setValue(courseAssignments);
+                                callback.onSuccess("You updated assignment successfully!");
+                            }
+                            else{
+                                callback.onFailed("Something went wrong!");
+                            }
+                        }
+                        else{
+                            callback.onFailed("Something went wrong!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("Something went wrong!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                callback.onFailed("Something went wrong!");
+            }
+        });
+    }
 
     public static DatabaseUtility getInstance(){
         if(instance == null){

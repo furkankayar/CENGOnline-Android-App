@@ -33,23 +33,25 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class NewAssignmentDialog extends Dialog implements View.OnClickListener {
+public class EditAssignmentDialog extends Dialog implements View.OnClickListener {
 
     private Button cancelButton;
-    private Button shareButton;
+    private Button editButton;
     private EditText assignmentTitleEditText;
     private EditText assignmentDescriptionEditText;
     private EditText assignmentDueEditText;
     private EditText assignmentDueTimeEditText;
     private Activity activity;
     private Course course;
+    private Assignment assignment;
 
-    public NewAssignmentDialog(Activity activity, Course course) {
+    public EditAssignmentDialog(Activity activity, Course course, Assignment assignment) {
         super(activity);
         this.activity = activity;
         this.course = course;
+        this.assignment = assignment;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_share_assignment);
+        setContentView(R.layout.activity_edit_assignment);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -57,21 +59,21 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
     public void onCreate(Bundle savedStateInstance) {
         this.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        this.shareButton = (Button)findViewById(R.id.share_assignment_share_button);
-        this.cancelButton = (Button)findViewById(R.id.share_assignment_cancel_button);
-        this.assignmentTitleEditText = (EditText)findViewById(R.id.share_assignment_title);
-        this.assignmentDescriptionEditText = (EditText)findViewById(R.id.share_assignment_description);
-        this.assignmentDueEditText = (EditText)findViewById(R.id.share_assignment_due);
-        this.assignmentDueTimeEditText = (EditText)findViewById(R.id.share_assignment_due_time);
+        this.editButton = (Button)findViewById(R.id.edit_assignment_edit_button);
+        this.cancelButton = (Button)findViewById(R.id.edit_assignment_cancel_button);
+        this.assignmentTitleEditText = (EditText)findViewById(R.id.edit_assignment_title);
+        this.assignmentDescriptionEditText = (EditText)findViewById(R.id.edit_assignment_description);
+        this.assignmentDueEditText = (EditText)findViewById(R.id.edit_assignment_due);
+        this.assignmentDueTimeEditText = (EditText)findViewById(R.id.edit_assignment_due_time);
 
-        this.shareButton.setOnClickListener(this);
+        this.editButton.setOnClickListener(this);
         this.cancelButton.setOnClickListener(this);
         this.assignmentDueEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-           @Override
-           public void onFocusChange(View v, boolean hasFocus) {
-               if(hasFocus)
-                   goToDatePicker();
-           }
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus)
+                    goToDatePicker();
+            }
         });
         this.assignmentDueTimeEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -81,13 +83,18 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
             }
         });
 
+        this.assignmentTitleEditText.setText(this.assignment.getTitle());
+        this.assignmentDescriptionEditText.setText(this.assignment.getBody());
+        this.assignmentDueEditText.setText(this.assignment.getDueDate().toStringDate());
+        this.assignmentDueTimeEditText.setText(this.assignment.getDueDate().toStringTime());
+
     }
 
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.share_assignment_share_button: this.shareButton.setEnabled(false); postAssignment(); break;
-            case R.id.share_assignment_cancel_button: dismiss(); break;
+            case R.id.edit_assignment_edit_button: this.editButton.setEnabled(false); editAssignment(); break;
+            case R.id.edit_assignment_cancel_button: dismiss(); break;
             default: break;
         }
     }
@@ -183,7 +190,7 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
         tpd.show();
     }
 
-    public void postAssignment(){
+    public void editAssignment(){
 
         String title = assignmentTitleEditText.getText().toString();
         String description = assignmentDescriptionEditText.getText().toString();
@@ -192,12 +199,12 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
 
         if(title.equals("")){
             makeToastMessage("Title can not be empty!");
-            shareButton.setEnabled(true);
+            editButton.setEnabled(true);
             return;
         }
         if(due.equals("")){
             makeToastMessage("Due date can not be empty!");
-            shareButton.setEnabled(true);
+            editButton.setEnabled(true);
             return;
         }
 
@@ -221,18 +228,18 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
         }
         catch (ArrayIndexOutOfBoundsException | NumberFormatException | NullPointerException ex){
             makeToastMessage(ex.getMessage());
-            shareButton.setEnabled(true);
+            editButton.setEnabled(true);
             return;
         }
 
-
-        MyTimestamp dueDate = new MyTimestamp(new Date(year - 1900, month, day, hour, minute));
+        MyTimestamp dueDate = new MyTimestamp(new Date(year- 1900, month, day, hour, minute));
         MyTimestamp postedAt = new MyTimestamp(new Date());
 
+        this.assignment.setTitle(title);
+        this.assignment.setDueDate(dueDate);
+        this.assignment.setBody(description);
 
-        Assignment assignment = new Assignment(title, dueDate, null, postedAt, description);
-
-        DatabaseUtility.getInstance().newCourseAssignment(this.course, assignment, new DatabaseCallback() {
+        DatabaseUtility.getInstance().updateCourseAssignments(this.course, this.assignment, new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 String msg = (String) result;
@@ -243,7 +250,7 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
             @Override
             public void onFailed(String message) {
                 makeToastMessage(message);
-                shareButton.setEnabled(true);
+                editButton.setEnabled(true);
             }
         });
     }

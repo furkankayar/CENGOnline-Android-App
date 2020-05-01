@@ -1,5 +1,7 @@
 package com.example.cengonline.post;
 
+import androidx.annotation.Nullable;
+
 import com.example.cengonline.model.MyTimestamp;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.AbstractPost;
@@ -38,6 +40,11 @@ public class Assignment extends AbstractPost {
         this.dueDate = dueDate;
     }
 
-
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj == null) return false;
+        Assignment o2 = (Assignment) obj;
+        return this.postedBy.equals(o2.postedBy) && this.getPostedAt().toString().equals(o2.getPostedAt().toString());
+    }
 
 }

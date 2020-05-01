@@ -1,5 +1,6 @@
 package com.example.cengonline.ui.course;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +17,7 @@ import com.example.cengonline.R;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Assignment;
+import com.example.cengonline.ui.dialog.EditAssignmentDialog;
 
 
 public class AssignmentFragment extends AppCompatActivity implements View.OnClickListener {
@@ -113,7 +115,7 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
                 onBackPressed();
                 break;
             case EDIT_ITEM:
-                showEditAnnouncementDialog();
+                showEditAssignmentDialog();
                 break;
             case DELETE_ITEM:
                 deleteAnnouncement();
@@ -157,15 +159,15 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
         });
     }
 
-    private void showEditAnnouncementDialog(){
-       /* EditAnnouncementDialog eaD = new EditAnnouncementDialog(this, this.course, this.assignment);
+    private void showEditAssignmentDialog(){
+       EditAssignmentDialog eaD = new EditAssignmentDialog(this, this.course, this.assignment);
         eaD.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 recreate();
             }
         });
-        eaD.show();*/
+        eaD.show();
     }
 
 

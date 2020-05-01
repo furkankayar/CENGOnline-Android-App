@@ -1,5 +1,7 @@
 package com.example.cengonline.ui.course;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -7,6 +9,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -501,6 +504,13 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
             }
             announcementCardModels = new ArrayList<CardModel>();
             printAnnouncementCardModels();
+        }
+        else if(result.getClass() == java.lang.String.class && ((String)result).equals("Assignments empty")){
+            for(CardView cv : assignmentCards){
+                assignmentsLinearLayout.removeView(cv);
+            }
+            assignmentCardModels =  new ArrayList<CardModel>();
+            printAssignmentCardModels();
         }
     }
 

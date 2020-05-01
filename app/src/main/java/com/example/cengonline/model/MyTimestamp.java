@@ -1,6 +1,8 @@
 package com.example.cengonline.model;
 
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -35,6 +37,31 @@ public class MyTimestamp extends Timestamp implements Serializable {
         return monthStr;
     }
 
+    public String toStringDate(){
+
+        try{
+            String str = super.toString();
+            String month = str.substring(5, 7);
+            String day = str.substring(8, 10);
+            String year = str.substring(0, 4);
+            Log.w("ASDASDa", str);
+            return Integer.parseInt(month) + "/" +Integer.parseInt(day) + "/" + Integer.parseInt(year);
+        }
+        catch(Exception ex){
+            return "01/01/1970";
+        }
+    }
+
+    public String toStringTime(){
+
+        try{
+            return super.toString().substring(11, 16);
+        }
+        catch (Exception ex){
+            return "00:00";
+        }
+    }
+
     public String toStringAssignmentDue(){
 
         try{
@@ -48,6 +75,10 @@ public class MyTimestamp extends Timestamp implements Serializable {
         catch(Exception ex){
             return super.toString();
         }
+    }
+
+    public String superToString(){
+        return super.toString();
     }
 
     @Override
