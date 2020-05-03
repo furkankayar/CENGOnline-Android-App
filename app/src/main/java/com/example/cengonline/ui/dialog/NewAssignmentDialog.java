@@ -52,7 +52,6 @@ public class NewAssignmentDialog extends Dialog implements View.OnClickListener 
         setContentView(R.layout.activity_share_assignment);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedStateInstance) {
         this.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

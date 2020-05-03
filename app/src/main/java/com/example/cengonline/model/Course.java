@@ -107,7 +107,6 @@ public class Course implements Serializable {
         this.studentList = studentList;
     }
 
-
     public List<String> enrollStudent(User user){
         if(user.getRoles().contains(User.Role.STUDENT))
             this.studentList.add(user.getKey());

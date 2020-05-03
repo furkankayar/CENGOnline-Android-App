@@ -18,6 +18,7 @@
         <LinearLayout
             android:id="@+id/scroll_view_linear_layout"
             android:layout_width="match_parent"
+            android:animateLayoutChanges="true"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:paddingBottom="15dp"

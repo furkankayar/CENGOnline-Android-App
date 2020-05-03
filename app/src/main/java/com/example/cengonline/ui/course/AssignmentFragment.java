@@ -1,6 +1,8 @@
 package com.example.cengonline.ui.course;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,15 +17,18 @@ import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.model.Course;
+import com.example.cengonline.model.FileType;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Assignment;
 import com.example.cengonline.ui.dialog.EditAssignmentDialog;
+import com.example.cengonline.ui.dialog.UploadAssignmentDialog;
 
 
 public class AssignmentFragment extends AppCompatActivity implements View.OnClickListener {
 
     private final int DELETE_ITEM = 1000;
     private final int EDIT_ITEM = 1001;
+    private final int UPLOAD_WORK = 1002;
 
     private Toolbar toolbar;
     private User user;
@@ -32,6 +37,9 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
     private TextView assignmentTitle;
     private TextView assignmentDueDate;
     private TextView assignmentDescription;
+
+    private UploadAssignmentDialog uaD;
+
 
 
     @Override
@@ -105,6 +113,8 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
         return true;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
 
@@ -118,14 +128,17 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
                 showEditAssignmentDialog();
                 break;
             case DELETE_ITEM:
-                deleteAnnouncement();
+                deleteAssignment();
+                break;
+            case UPLOAD_WORK:
+                showUploadAssignmentDialog();
                 break;
         }
         return true;
     }
 
-    private void deleteAnnouncement(){
-       /* DatabaseUtility.getInstance().deleteCourseAnnouncement(course, announcement, new DatabaseCallback() {
+    private void deleteAssignment(){
+       DatabaseUtility.getInstance().deleteCourseAssignment(course, assignment, new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 String message = (String)result;
@@ -137,7 +150,18 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
             public void onFailed(String message) {
                 makeToastMessage(message);
             }
-        });*/
+        });
+    }
+
+    private void showUploadAssignmentDialog(){
+        this.uaD = new UploadAssignmentDialog(this, this.course, this.assignment);
+        this.uaD.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                recreate();
+            }
+        });
+        this.uaD.show();
     }
 
     private void setMenuItems(final Menu menu){
@@ -150,6 +174,9 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
                     menu.add(0, EDIT_ITEM, 0, "Edit");
                     menu.add(0, DELETE_ITEM, 1, "Delete");
                 }
+                if(user.getRoles().contains(User.Role.STUDENT) && user.getRoles().size() == 1){
+                    menu.add(0, UPLOAD_WORK, 2, "Upload Your Work");
+                }
             }
 
             @Override
@@ -160,7 +187,7 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
     }
 
     private void showEditAssignmentDialog(){
-       EditAssignmentDialog eaD = new EditAssignmentDialog(this, this.course, this.assignment);
+        EditAssignmentDialog eaD = new EditAssignmentDialog(this, this.course, this.assignment);
         eaD.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -170,7 +197,16 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
         eaD.show();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if((requestCode == FileType.PDF.getValue() || requestCode == FileType.TXT.getValue()) && resultCode == RESULT_OK && data != null && data.getData() != null){
+            Uri filePath = data.getData();
+            this.uaD.updateContent(filePath);
+        }
+
+    }
 
     private void makeToastMessage(String message){
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();

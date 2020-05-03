@@ -90,6 +90,4 @@
             android:textSize="15sp"
             android:background="@null"/>
     </LinearLayout>
-
-
 </LinearLayout>

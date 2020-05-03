@@ -663,6 +663,60 @@ public class DatabaseUtility {
         });
     }
 
+    public void deleteCourseAssignment(final Course course, final Assignment assignment, final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                final DatabaseReference courseAssignmentsRef = FirebaseDatabase.getInstance().getReference().child("courseAssignments");
+                Query query = courseAssignmentsRef.orderByChild("courseKey").equalTo(course.getKey());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            CourseAssignments courseAssignments = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                courseAssignments = ds.getValue(CourseAssignments.class);
+                            }
+                            if(courseAssignments != null && courseAssignments.getAssignments() != null){
+                                courseAssignments.getAssignments().remove(assignment);
+                                if(courseAssignments.getAssignments().isEmpty()){
+                                    courseAssignmentsRef.child(courseAssignments.getKey()).removeValue(new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                            callback.onSuccess("You deleted assignment successfully!");
+                                        }
+                                    });
+                                }
+                                else{
+                                    courseAssignmentsRef.child(courseAssignments.getKey()).setValue(courseAssignments);
+                                    callback.onSuccess("You deleted assignment successfully!");
+                                }
+                            }
+                            else{
+                                callback.onFailed("Something went wrong!");
+                            }
+                        }
+                        else{
+                            callback.onFailed("Something went wrong!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("Something went wrong!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                callback.onFailed("Something went wrong!");
+            }
+        });
+    }
+
     public static DatabaseUtility getInstance(){
         if(instance == null){
             instance = new DatabaseUtility();
