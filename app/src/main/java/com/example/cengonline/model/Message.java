@@ -1,5 +1,7 @@
 package com.example.cengonline.model;
 
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 
 public class Message implements Serializable {
@@ -40,5 +42,12 @@ public class Message implements Serializable {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj == null) return false;
+        Message m2 = (Message) obj;
+        return this.sentAt.toString().equals(m2.sentAt.toString()) && this.body.equals(m2.body);
     }
 }
