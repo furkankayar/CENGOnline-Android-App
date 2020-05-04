@@ -1,24 +1,20 @@
 package com.example.cengonline;
 
-import android.media.MediaPlayer;
-import android.provider.ContactsContract;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.cengonline.model.Conversation;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.CourseAssignments;
 import com.example.cengonline.model.EnrolledCourses;
+import com.example.cengonline.model.Message;
 import com.example.cengonline.model.MyTimestamp;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Announcement;
 import com.example.cengonline.post.Assignment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,14 +22,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.TimeZone;
 import java.util.UUID;
 
 public class DatabaseUtility {
@@ -713,6 +706,186 @@ public class DatabaseUtility {
             @Override
             public void onFailed(String message) {
                 callback.onFailed("Something went wrong!");
+            }
+        });
+    }
+
+    public void getUserFromEmail(final String email, final DatabaseCallback callback){
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users");
+        Query query = userRef.orderByChild("email").equalTo(email);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = null;
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    user = ds.getValue(User.class);
+                }
+                if(user == null){
+                    callback.onFailed("User not found!");
+                }
+                else{
+                    callback.onSuccess(user) ;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFailed("An error occurred! Try again.");
+            }
+        });
+    }
+
+    public void newMessage(final String conversationKey, final Message message, final DatabaseCallback callback){
+
+        final DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference().child("conversations");
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                message.setSenderKey(user.getKey());
+                message.setSentAt(new MyTimestamp(new Date()));
+                Query query = messagesRef.orderByKey().equalTo(conversationKey);
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            Conversation conversation = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                conversation = ds.getValue(Conversation.class);
+                            }
+                            if(conversation != null && conversation.getMessages() != null){
+                                conversation.getMessages().add(message);
+                                messagesRef.child(conversation.getKey()).setValue(conversation);
+                                callback.onSuccess("Successful!");
+                            }
+                            else if(conversation != null){
+                                conversation.setMessages(Arrays.asList(message));
+                                messagesRef.child(conversation.getKey()).setValue(conversation);
+                                callback.onSuccess("Successful!");
+                            }
+                            else{
+                                callback.onFailed("An error occurred while sending message!");
+                            }
+                        }
+                        else{
+                            callback.onFailed("An error occurred while sending message!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("An error occurred while sending message!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                callback.onFailed("An error occurred while sending message!");
+            }
+        });
+
+    }
+
+    public void getConversations(final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                DatabaseReference conversationsRef = FirebaseDatabase.getInstance().getReference().child("conversations");
+                conversationsRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            List<Conversation> conversations = new ArrayList<Conversation>();
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                Conversation conversation = ds.getValue(Conversation.class);
+                                if(conversation != null && (conversation.getSender().getKey().equals(user.getKey()) || conversation.getReceiver().getKey().equals(user.getKey()))){
+                                    conversations.add(conversation);
+                                }
+                            }
+                            callback.onSuccess(conversations);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("An error occurred while getting messages!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+
+            }
+        });
+    }
+
+
+    public void getConversationSingle(final User secondUser,final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                DatabaseReference conversationsRef = FirebaseDatabase.getInstance().getReference().child("conversations");
+                conversationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            Conversation conversation = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                conversation = ds.getValue(Conversation.class);
+                                if(conversation != null &&
+                                        (conversation.getSender().getKey().equals(user.getKey()) || conversation.getReceiver().getKey().equals(user.getKey())) &&
+                                        (conversation.getSender().getKey().equals(secondUser.getKey()) || conversation.getReceiver().getKey().equals(secondUser.getKey()))
+                                ){
+                                    break;
+                                }
+                                else{
+                                    conversation = null;
+                                }
+                            }
+                            callback.onSuccess(conversation);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("An error occurred while getting messages!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+
+            }
+        });
+    }
+
+    public void getConversationWithKey(final String conversationKey, final DatabaseCallback callback){
+
+        DatabaseReference conversationRef = FirebaseDatabase.getInstance().getReference().child("conversations");
+        Query query = conversationRef.orderByKey().equalTo(conversationKey);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Conversation conversation = null;
+                    for(DataSnapshot ds : dataSnapshot.getChildren()){
+                        conversation = ds.getValue(Conversation.class);
+                    }
+                    if(conversation != null){
+                        callback.onSuccess(conversation);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

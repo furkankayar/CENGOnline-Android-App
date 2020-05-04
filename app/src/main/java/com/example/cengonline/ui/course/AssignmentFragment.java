@@ -29,6 +29,7 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
     private final int DELETE_ITEM = 1000;
     private final int EDIT_ITEM = 1001;
     private final int UPLOAD_WORK = 1002;
+    private final int LIST_SUBMISSIONS = 1003;
 
     private Toolbar toolbar;
     private User user;
@@ -133,6 +134,9 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
             case UPLOAD_WORK:
                 showUploadAssignmentDialog();
                 break;
+            case LIST_SUBMISSIONS:
+                showAssignmentListFragment();
+                break;
         }
         return true;
     }
@@ -173,6 +177,7 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
                 if(assignment.getPostedBy().equals(user.getKey())){
                     menu.add(0, EDIT_ITEM, 0, "Edit");
                     menu.add(0, DELETE_ITEM, 1, "Delete");
+                    menu.add(0, LIST_SUBMISSIONS, 3, "List Submissions");
                 }
                 if(user.getRoles().contains(User.Role.STUDENT) && user.getRoles().size() == 1){
                     menu.add(0, UPLOAD_WORK, 2, "Upload Your Work");
@@ -184,6 +189,15 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
 
             }
         });
+    }
+
+    private void showAssignmentListFragment(){
+
+        Intent intent = new Intent(this, AssignmentListFragment.class);
+        intent.putExtra("course", course);
+        intent.putExtra("user", user);
+        intent.putExtra("assignment", assignment);
+        startActivity(intent);
     }
 
     private void showEditAssignmentDialog(){
@@ -211,10 +225,4 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
     private void makeToastMessage(String message){
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
-
-
-
-
-
-
 }

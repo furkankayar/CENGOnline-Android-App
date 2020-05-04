@@ -14,6 +14,18 @@
         android:theme="@style/AppTheme">
 
         <activity
+            android:name=".ui.message.SpecialMessageFragment"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/MyMaterialTheme">
+        </activity>
+
+
+        <activity
+            android:name=".ui.course.AssignmentListFragment"
+            android:theme="@style/MyMaterialTheme">
+        </activity>
+
+        <activity
             android:name=".ui.course.AssignmentFragment"
             android:theme="@style/MyMaterialTheme">
 

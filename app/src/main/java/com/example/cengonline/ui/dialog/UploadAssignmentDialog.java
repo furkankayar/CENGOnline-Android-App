@@ -2,10 +2,12 @@ package com.example.cengonline.ui.dialog;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -36,6 +38,7 @@ import com.example.cengonline.model.Course;
 import com.example.cengonline.model.FileType;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Assignment;
+import com.example.cengonline.ui.course.AssignmentListFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -202,9 +205,26 @@ public class UploadAssignmentDialog extends Dialog implements View.OnClickListen
                     deleteImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            progressDialog.setMessage("Deleting file, please wait.");
-                            progressDialog.show();
-                            deleteFile(file);
+
+                            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which){
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            progressDialog.setMessage("Deleting " + file.getFileName());
+                                            progressDialog.show();
+                                            deleteFile(file);
+                                            break;
+                                        case DialogInterface.BUTTON_NEGATIVE:
+                                            break;
+                                    }
+                                }
+                            };
+                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                            builder.setMessage("You are deleting " + file.getFileName() + ". Are you sure?")
+                                    .setPositiveButton("Yes", dialogClickListener)
+                                    .setNegativeButton("No", dialogClickListener)
+                                    .show();
                         }
                     });
 
@@ -342,7 +362,7 @@ public class UploadAssignmentDialog extends Dialog implements View.OnClickListen
 
 
         downloadManager.enqueue(request);
-        makeToastMessage(request.toString());
+        makeToastMessage("Download request has been added the queue!");
         progressDialog.dismiss();
     }
 
