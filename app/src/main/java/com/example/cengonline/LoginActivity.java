@@ -1,5 +1,6 @@
 package com.example.cengonline;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -48,17 +49,22 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private User user;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        this.progressDialog = new ProgressDialog(this);
+
         SignInButton signInButton = findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View view) {
-                // Launch Sign In
+                progressDialog.setMessage("Please wait...");
+                progressDialog.show();
                 signInToGoogle();
+
             }
         });
 
@@ -75,13 +81,15 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
+                progressDialog.setMessage("Please wait...");
+                progressDialog.show();
                 signWithCredentials();
             }
         });
 
         // Configure Google Client
         configureGoogleClient();
+
     }
 
     private void configureGoogleClient() {
@@ -98,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Set the dimensions of the sign-in button.
         SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_WIDE);
+        signInButton.setSize(SignInButton.SIZE_ICON_ONLY);
 
         // Initialize Firebase Auth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -129,12 +137,14 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                showToastMessage("Google Sign in Succeeded");
                 firebaseAuthWithGoogle(account);
+                googleSignInClient.signOut();
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
-                showToastMessage("Google Sign in Failed " + e);
+
+                showToastMessage("Google Sign in failed!");
+                progressDialog.dismiss();
             }
         }
     }
@@ -153,14 +163,14 @@ public class LoginActivity extends AppCompatActivity {
 
                             Log.d(TAG, "signInWithCredential:success: currentUser: " + firebaseUser.getEmail());
                             saveUserIfDoesNotExist(firebaseUser);
-                            showToastMessage("Firebase Authentication Succeeded ");
 
                         } else {
                             // If sign in fails, display a message to the user.
 
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-
+                            progressDialog.dismiss();
                             showToastMessage("Firebase Authentication failed:" + task.getException());
+
                         }
                     }
                 });
@@ -202,6 +212,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(!task.isSuccessful()){
                             showToastMessage("Authentication failed!");
+                            progressDialog.dismiss();
                         }
                         else{
 
@@ -211,6 +222,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             else{
                                 showToastMessage("Unexpected error! Try again.");
+                                progressDialog.dismiss();
                             }
                         }
                     }
@@ -223,6 +235,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Object result) {
                 user = (User)result;
+                progressDialog.dismiss();
                 launchMainActivity();
             }
 

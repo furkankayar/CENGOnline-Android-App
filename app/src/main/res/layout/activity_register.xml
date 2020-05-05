@@ -6,38 +6,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:background="@drawable/app_background">
+    android:gravity="center">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/signUpMessage"
-        android:textColor="@color/white"
-        android:textSize="20sp"/>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="300dp"
+        android:layout_height="112dp"
+        android:background="@drawable/app_logo"
+        app:layout_constraintBottom_toTopOf="@id/textInputLayout2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginTop="80dp"
-        android:textColorHint="@color/white"
-        app:hintTextColor="@color/white">
+        android:layout_marginTop="50dp"
+        app:hintTextColor="#1D45C0"
+        >
 
         <EditText
             android:id="@+id/registerEmail"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
             android:ems="10"
             android:hint="@string/emailHint"
             android:inputType="textEmailAddress"
-            android:textColor="@color/white"
-            android:textColorHighlight="@color/white"
-            android:textColorHint="@color/white"
-            android:theme="@style/EditTextStyle" />
+            android:theme="@style/EditTextStyle2" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,24 +44,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginTop="30dp"
-        android:textColorHint="@color/white"
-        app:hintTextColor="@color/white"
-        app:passwordToggleTint="@color/white">
+        android:layout_marginTop="15dp"
+        app:hintTextColor="#1D45C0">
 
         <EditText
             android:id="@+id/registerPassword"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
             android:ems="10"
             android:hint="@string/passwordHint"
             android:inputType="textPassword"
-            android:textColor="@color/white"
-            android:textColorHighlight="@color/white"
-            android:textColorHint="@color/white"
-            android:textColorLink="@color/white"
-            android:theme="@style/EditTextStyle" />
+            android:theme="@style/EditTextStyle2" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,23 +62,18 @@
         android:id="@+id/textInputLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:gravity="center"
-        android:layout_marginTop="30dp"
-        android:textColorHint="@color/white"
-        app:hintTextColor="@color/white">
+        app:hintTextColor="#1D45C0">
 
         <EditText
             android:id="@+id/registerFirstName"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
             android:ems="10"
             android:hint="@string/firstNameHint"
             android:inputType="text"
-            android:textColor="@color/white"
-            android:textColorHighlight="@color/white"
-            android:textColorHint="@color/white"
-            android:theme="@style/EditTextStyle" />
+            android:theme="@style/EditTextStyle2" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -95,23 +81,18 @@
         android:id="@+id/textInputLayout4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:gravity="center"
-        android:layout_marginTop="30dp"
-        android:textColorHint="@color/white"
-        app:hintTextColor="@color/white">
+        app:hintTextColor="#1D45C0">
 
         <EditText
             android:id="@+id/registerLastName"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
             android:ems="10"
             android:hint="@string/lastNameHint"
             android:inputType="text"
-            android:textColor="@color/white"
-            android:textColorHighlight="@color/white"
-            android:textColorHint="@color/white"
-            android:theme="@style/EditTextStyle" />
+            android:theme="@style/EditTextStyle2" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -128,9 +109,10 @@
         android:id="@+id/redirectLoginText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="#1D45C0"
         android:gravity="center"
         android:text="@string/redirectLogin"
-        android:textColor="@color/white"
         android:textStyle="bold" />
 
 

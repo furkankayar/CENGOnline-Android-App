@@ -13,6 +13,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity android:name=".SplashActivity"
+                  android:theme="@style/MyMaterialTheme">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".ui.message.SpecialMessageFragment"
             android:windowSoftInputMode="stateHidden"
@@ -47,18 +55,13 @@
 
 
         </activity>
-        <activity android:name=".TestActivity" />
         <activity
             android:name=".RegisterActivity"
             android:theme="@style/AppTheme.MyNoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.MyNoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <meta-data

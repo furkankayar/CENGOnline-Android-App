@@ -12,11 +12,7 @@
         android:orderInCategory="200"
         android:title="Join Class"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="300"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/action_logout"
         android:orderInCategory="400"

@@ -76,8 +76,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         this.drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_messages, R.id.nav_course)
                 .setDrawerLayout(drawerLayout)
@@ -220,10 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         final Menu menu = navigationView.getMenu();
         final SubMenu subMenu = menu.addSubMenu("Enrolled");
-        /*menu.add("ITEM");
-        MenuItem item = menu.getItem(3);
-        item.setCheckable(true);
-        item.setIcon(R.drawable.ic_menu_camera);*/
+
 
         DatabaseUtility.getInstance().getAllCourses(new DatabaseCallback() {
             @Override

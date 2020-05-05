@@ -116,6 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void launchLoginActivity(){
 
         startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     private void saveUserToDatabase(FirebaseUser firebaseUser, String firstName, String lastName){
