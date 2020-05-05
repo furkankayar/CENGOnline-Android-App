@@ -108,6 +108,7 @@ public class NewMessageDialog extends Dialog implements View.OnClickListener {
         if (conversationKey != null){
             intent.putExtra("conversationKey", conversationKey);
         }
+
         activity.startActivity(intent);
     }
 

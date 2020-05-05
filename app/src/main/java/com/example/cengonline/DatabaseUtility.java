@@ -850,6 +850,9 @@ public class DatabaseUtility {
                             }
                             callback.onSuccess(conversation);
                         }
+                        else{
+                            callback.onSuccess(null);
+                        }
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
