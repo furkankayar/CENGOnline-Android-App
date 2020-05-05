@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
     private String conversationKey;
     private List<Message> messages;
     private LinearLayout linearLayout;
+    private ScrollView scrollView;
 
 
     @Override
@@ -52,6 +54,7 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
         this.messageText = findViewById(R.id.new_message);
         this.sendFab = findViewById(R.id.send_message_fab);
         this.linearLayout = findViewById(R.id.scroll_view_linear_layout);
+        this.scrollView = findViewById(R.id.scroll_view);
         this.messages = new ArrayList<Message>();
 
         if(getIntent() != null && getIntent().getSerializableExtra("sendUser") != null){
@@ -64,6 +67,9 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
             this.sendFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(messageText.getText().toString().equals("")){
+                        return;
+                    }
                     Message message = new Message(null, null, messageText.getText().toString());
                     messageText.setText("");
                     DatabaseUtility.getInstance().newMessage(conversationKey, message, new DatabaseCallback() {
@@ -147,6 +153,12 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
                 this.messages.add(message);
                 drawMessage(message);
             }
+            scrollView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                }
+            },500);
         }
     }
 
@@ -156,14 +168,17 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
 
         TextView displayNameText = new TextView(this);
         LinearLayout.LayoutParams displayNameTextLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        displayNameTextLayoutParams.weight = 0;
         displayNameTextLayoutParams.leftMargin = util.DPtoPX(10, this);
         displayNameTextLayoutParams.rightMargin = util.DPtoPX(10, this);
         displayNameText.setLayoutParams(displayNameTextLayoutParams);
+        displayNameText.setMaxWidth(util.DPtoPX(240, this));
         displayNameText.setTextAppearance(this, R.style.fontForDisplayNameOnCard);
         displayNameText.setText(message.getBody());
 
         TextView dateText = new TextView(this);
         LinearLayout.LayoutParams dateTextLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        dateTextLayoutParams.weight = 1;
         dateText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         dateTextLayoutParams.rightMargin = util.DPtoPX(10, this);
         dateTextLayoutParams.leftMargin = util.DPtoPX(10, this);
@@ -176,7 +191,7 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
         LinearLayout.LayoutParams middleLinarLayoutLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         middleLinarLayoutLayoutParams.topMargin = util.DPtoPX(10, this);
         middleLinarLayoutLayoutParams.bottomMargin = util.DPtoPX(10, this);
-        middleLinarLayoutLayoutParams.leftMargin = util.DPtoPX(15, this);
+
         middleLinearLayout.setLayoutParams(middleLinarLayoutLayoutParams);
         middleLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
         middleLinearLayout.setGravity(Gravity.CENTER);
@@ -220,6 +235,7 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
         cardView.addView(outerLinearLayout, outerLinearLayoutLayoutParams);
 
         this.linearLayout.addView(cardView, cardViewLayoutParams);
+
     }
 
     private void getMessages(){
