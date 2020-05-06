@@ -1,5 +1,6 @@
 package com.example.cengonline.ui.course;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -129,7 +130,23 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
                 showEditAssignmentDialog();
                 break;
             case DELETE_ITEM:
-                deleteAssignment();
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                deleteAssignment();
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                };
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Are you sure?")
+                        .setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener)
+                        .show();
                 break;
             case UPLOAD_WORK:
                 showUploadAssignmentDialog();

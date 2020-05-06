@@ -70,14 +70,16 @@
 
     <Button
         android:id="@+id/loginButton"
-        android:layout_width="200dp"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/loginHint"
+        android:background="#5782BB"
+        android:text="@string/loginHint"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/redirectRegisterText"
-        app:layout_constraintTop_toBottomOf="@id/textInputLayout"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout" />
 
     <TextView
         android:id="@+id/redirectRegisterText"
@@ -85,7 +87,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/redirectRegister"
-        android:textColor="#1D45C0"
+        android:textColor="#5782BB"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/sign_in_button"
         app:layout_constraintTop_toBottomOf="@id/loginButton"

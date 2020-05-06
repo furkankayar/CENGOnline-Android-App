@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,19 @@ public class HomeFragment extends Fragment {
             public void onSuccess(Object result) {
                 final List<Course> courses = (List<Course>)result;
                 lineaScrollLayout.removeAllViews();
+                if(courses.size() == 0 && getActivity() != null){
+                    TextView tv = new TextView(getActivity());
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    tv.setLayoutParams(lp);
+                    tv.setTextAppearance(getActivity(), R.style.fontForEmptyMessage);
+                    tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    tv.setText("You haven't joined any class!");
+                    lineaScrollLayout.setGravity(Gravity.CENTER);
+                    lineaScrollLayout.addView(tv, lp);
+                }
+                else{
+                    lineaScrollLayout.setGravity(Gravity.TOP);
+                }
                 for(final Course course : courses){
                     DatabaseUtility.getInstance().getUserWithKey(course.getCreatedBy(), new DatabaseCallback() {
                         @Override

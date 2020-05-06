@@ -65,6 +65,19 @@ public class MessageFragment extends Fragment {
                 if(result != null){
                     linearLayout.removeAllViews();
                     List<Conversation> conversations = (ArrayList<Conversation>)result;
+                    if(conversations.size() == 0 && getActivity() != null){
+                        TextView tv = new TextView(getActivity());
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        tv.setLayoutParams(lp);
+                        tv.setTextAppearance(getActivity(), R.style.fontForEmptyMessage);
+                        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                        tv.setText("You haven't got any message!");
+                        linearLayout.setGravity(Gravity.CENTER);
+                        linearLayout.addView(tv, lp);
+                    }
+                    else{
+                        linearLayout.setGravity(Gravity.TOP);
+                    }
                     for(Conversation conversation : conversations){
                         drawConversation(conversation);
                     }

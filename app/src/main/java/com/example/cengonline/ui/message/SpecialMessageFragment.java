@@ -1,5 +1,6 @@
 package com.example.cengonline.ui.message;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -220,16 +221,18 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
         cardViewLayoutParams.bottomMargin = util.DPtoPX(7, this);
         cardViewLayoutParams.leftMargin = util.DPtoPX(8, this);
         cardViewLayoutParams.rightMargin = util.DPtoPX(8, this);
+        cardView.setLayoutParams(cardViewLayoutParams);
 
         if(message.getSenderKey().equals(sendUser.getKey())){
             cardViewLayoutParams.gravity = Gravity.LEFT;
         }
         else{
             cardViewLayoutParams.gravity = Gravity.RIGHT;
+            cardView.setBackgroundColor(Color.parseColor("#DEFAC7"));
         }
-        cardView.setLayoutParams(cardViewLayoutParams);
+
         cardView.setClickable(true);
-        cardView.setRadius(util.DPtoPX(8, this));
+
 
 
         cardView.addView(outerLinearLayout, outerLinearLayoutLayoutParams);

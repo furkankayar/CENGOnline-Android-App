@@ -100,17 +100,19 @@
 
     <Button
         android:id="@+id/registerButton"
-        android:layout_width="200dp"
+        android:layout_width="120dp"
         android:layout_marginTop="40dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/registerHint"/>
+        android:layout_height="40dp"
+        android:text="@string/registerHint"
+        android:textColor="@color/white"
+        android:background="#5782BB"/>
 
     <TextView
         android:id="@+id/redirectLoginText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:textColor="#1D45C0"
+        android:textColor="#5782BB"
         android:gravity="center"
         android:text="@string/redirectLogin"
         android:textStyle="bold" />

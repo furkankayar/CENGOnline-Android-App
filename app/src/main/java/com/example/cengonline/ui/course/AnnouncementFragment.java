@@ -1,5 +1,6 @@
 package com.example.cengonline.ui.course;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -122,7 +123,23 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
                 showEditAnnouncementDialog();
                 break;
             case DELETE_ITEM:
-                deleteAnnouncement();
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                deleteAnnouncement();
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                };
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Are you sure?")
+                        .setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener)
+                        .show();
                 break;
         }
         return true;

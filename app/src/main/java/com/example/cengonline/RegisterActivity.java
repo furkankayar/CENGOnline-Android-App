@@ -1,5 +1,6 @@
 package com.example.cengonline;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -31,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText memberFirstName;
     private EditText memberLastName;
     private Button registerButton;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -38,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        this.progressDialog = new ProgressDialog(this);
 
         findViewById(R.id.redirectLoginText).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +83,8 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Password should be minimum 6 characters", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                progressDialog.setMessage("Please wait...");
+                progressDialog.show();
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -91,15 +95,13 @@ public class RegisterActivity extends AppCompatActivity {
                                             Toast.makeText(RegisterActivity.this, "Authentication Error", Toast.LENGTH_SHORT).show();
                                         }
                                     });
+                                    progressDialog.dismiss();
                                 }
                                 else{
                                     FirebaseUser firebaseUser = task.getResult().getUser();
                                     if(firebaseUser != null){
 
                                         saveUserToDatabase(firebaseUser, firstName, lastName);
-
-                                    }
-                                    else{
 
                                     }
                                 }
@@ -127,9 +129,8 @@ public class RegisterActivity extends AppCompatActivity {
         User user = new User(newVal.getKey(), firebaseUser.getUid(), firebaseUser.getEmail(), firstName + " " + lastName, Arrays.asList(User.Role.STUDENT));
         newVal.setValue(user);
         Toast.makeText(this, "You have been registered successfully.", Toast.LENGTH_LONG).show();
-        this.memberEmail.setText("");
-        this.memberPassword.setText("");
-        this.memberFirstName.setText("");
-        this.memberLastName.setText("");
+        FirebaseAuth.getInstance().signOut();
+        progressDialog.dismiss();
+        launchLoginActivity();
     }
 }

@@ -8,7 +8,14 @@ public class User implements Serializable{
     public enum Role{
         STUDENT,
         TEACHER,
-        ADMIN
+        ADMIN;
+
+        public static Role parse(String role){
+            if(role.equalsIgnoreCase("ADMIN")) return ADMIN;
+            else if(role.equalsIgnoreCase("STUDENT")) return STUDENT;
+            else if(role.equalsIgnoreCase("TEACHER")) return TEACHER;
+            return null;
+        }
     };
 
     private String key;

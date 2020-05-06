@@ -59,6 +59,8 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
     private LinearLayout linearLayout;
     private ProgressDialog progressDialog;
     private List<FileEntity> files;
+    private int dismissLimit;
+    private int dismissCounter;
 
 
     @Override
@@ -82,6 +84,8 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
             this.assignment = (Assignment) getIntent().getSerializableExtra("assignment");
 
 
+            progressDialog.setMessage("Fetching files...");
+            progressDialog.show();
             getFiles();
 
 
@@ -146,7 +150,7 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
             ImageView downloadImage = new ImageView(this);
             LinearLayout.LayoutParams downloadImageLayoutParams = new LinearLayout.LayoutParams(util.DPtoPX(20, this), util.DPtoPX(20, this));
             //downloadImageLayoutParams.topMargin = util.DPtoPX(10, activity);
-            downloadImageLayoutParams.rightMargin = util.DPtoPX(10, this);
+            downloadImageLayoutParams.rightMargin = util.DPtoPX(20, this);
             downloadImageLayoutParams.leftMargin = util.DPtoPX(10, this);
             downloadImage.setLayoutParams(downloadImageLayoutParams);
             downloadImage.setBackground(this.getResources().getDrawable(R.drawable.ic_direction));
@@ -227,11 +231,11 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;
-
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(course.getKey() + "/" + assignment.getPostedAt().hashCode());
                 storageReference.listAll().addOnCompleteListener(new OnCompleteListener<ListResult>() {
                     @Override
                     public void onComplete(@NonNull Task<ListResult> task) {
+                        dismissLimit = task.getResult().getItems().size();
                         for(StorageReference item: task.getResult().getItems()){
                             item.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
                                 @Override
@@ -239,10 +243,24 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
                                     FileEntity fileEntity = new FileEntity(storageMetadata.getName(), new MyTimestamp(new Date(storageMetadata.getCreationTimeMillis())));
                                     printFileNames(fileEntity);
                                     files.add(fileEntity);
+                                    dismissCounter++;
+                                    if(dismissCounter == dismissLimit){
+                                        progressDialog.dismiss();
+                                    }
                                 }
                             });
                         }
-
+                        if(task.getResult().getItems().size() == 0 ){
+                            TextView tv = new TextView(AssignmentListFragment.this);
+                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            lp.topMargin = Utility.getInstance().DPtoPX(20, AssignmentListFragment.this);
+                            tv.setLayoutParams(lp);
+                            tv.setTextAppearance(AssignmentListFragment.this, R.style.fontForEmptyMessage);
+                            tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                            tv.setText("There aren't any submissions!");
+                            linearLayout.addView(tv, lp);
+                            progressDialog.dismiss();
+                        }
                     }
                 });
 
@@ -263,7 +281,7 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        makeToastMessage(file.getFileName() + "has been deleted successfully!");
+                        makeToastMessage(file.getFileName() + " has been deleted successfully!");
                         linearLayout.removeView(cardView);
                         progressDialog.dismiss();
                     }

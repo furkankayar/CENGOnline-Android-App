@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_messages, R.id.nav_course)
+                R.id.nav_home, R.id.nav_messages, R.id.nav_admin)
                 .setDrawerLayout(drawerLayout)
                 .build();
 
@@ -217,6 +217,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void createNavigationMenuItems(){
 
         final Menu menu = navigationView.getMenu();
+        if(this.user.getRoles().contains(User.Role.ADMIN)){
+            menu.add(0, 0, 0, "User Roles")
+                    .setIcon(R.drawable.ic_data_settings)
+                    .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            navController.navigate(R.id.nav_admin);
+                            return false;
+                        }
+                    })
+                    .setCheckable(true);
+        }
+
         final SubMenu subMenu = menu.addSubMenu("Enrolled");
 
 

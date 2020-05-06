@@ -89,6 +89,13 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="fontForEmptyMessage">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">#1D45C0</item>
     </style>

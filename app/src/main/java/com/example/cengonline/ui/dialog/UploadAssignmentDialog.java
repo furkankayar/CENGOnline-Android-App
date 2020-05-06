@@ -183,7 +183,7 @@ public class UploadAssignmentDialog extends Dialog implements View.OnClickListen
                     ImageView downloadImage = new ImageView(getContext());
                     LinearLayout.LayoutParams downloadImageLayoutParams = new LinearLayout.LayoutParams(util.DPtoPX(20, activity), util.DPtoPX(20, activity));
                     //downloadImageLayoutParams.topMargin = util.DPtoPX(10, activity);
-                    downloadImageLayoutParams.rightMargin = util.DPtoPX(10, activity);
+                    downloadImageLayoutParams.rightMargin = util.DPtoPX(15, activity);
                     downloadImage.setLayoutParams(downloadImageLayoutParams);
                     downloadImage.setBackground(getContext().getResources().getDrawable(R.drawable.ic_direction));
 

@@ -280,7 +280,7 @@ public class DatabaseUtility {
 
                 final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
                 Query query = courseRef.orderByChild("key").equalTo(course.getKey());
-                query.addValueEventListener(new ValueEventListener() {
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -822,7 +822,6 @@ public class DatabaseUtility {
             }
         });
     }
-
 
     public void getConversationSingle(final User secondUser,final DatabaseCallback callback){
 
