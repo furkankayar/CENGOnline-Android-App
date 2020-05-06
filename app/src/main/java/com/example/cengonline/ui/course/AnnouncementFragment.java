@@ -60,7 +60,12 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
 
             this.profilTextView.setText(this.user.getDisplayName().toUpperCase().substring(0, 1));
             this.userTextView.setText(this.user.getDisplayName());
-            this.dateTextView.setText(this.announcement.getPostedAt().toString());
+            if(this.announcement.getEditedAt() != null){
+                this.dateTextView.setText(this.announcement.getPostedAt().toString() + " (Edited " + this.announcement.getEditedAt().toString() + ")");
+            }
+            else{
+                this.dateTextView.setText(this.announcement.getPostedAt().toString());
+            }
             this.announcementTextView.setText(this.announcement.getBody());
 
 

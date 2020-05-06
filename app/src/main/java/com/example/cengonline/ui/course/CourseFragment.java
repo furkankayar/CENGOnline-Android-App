@@ -313,7 +313,12 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         dateTextLayoutParams.leftMargin = util.DPtoPX(20, this);
         dateText.setLayoutParams(dateTextLayoutParams);
         dateText.setTextAppearance(this, R.style.fontForDateOnCard);
-        dateText.setText(cardModel.getPost().getPostedAt().toString());
+        if(cardModel.getPost().getEditedAt() != null){
+            dateText.setText(cardModel.getPost().getPostedAt().toString() + " (Edited " + cardModel.getPost().getEditedAt().toString() + ")");
+        }
+        else{
+            dateText.setText(cardModel.getPost().getPostedAt().toString());
+        }
 
 
         LinearLayout middleLinearLayout = new LinearLayout(this);
@@ -397,7 +402,13 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         dateTextLayoutParams.leftMargin = util.DPtoPX(20, this);
         dateText.setLayoutParams(dateTextLayoutParams);
         dateText.setTextAppearance(this, R.style.fontForDateOnCard);
-        dateText.setText(cardModel.getPost().getPostedAt().toString());
+        if(cardModel.getPost().getEditedAt() != null){
+            dateText.setText(cardModel.getPost().getPostedAt().toString() + " (Edited " + cardModel.getPost().getEditedAt().toString() + ")");
+        }
+        else{
+            dateText.setText(cardModel.getPost().getPostedAt().toString());
+        }
+
 
 
         LinearLayout middleLinearLayout = new LinearLayout(this);
