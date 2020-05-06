@@ -27,10 +27,10 @@ import com.example.cengonline.ui.dialog.UploadAssignmentDialog;
 
 public class AssignmentFragment extends AppCompatActivity implements View.OnClickListener {
 
-    private final int DELETE_ITEM = 1000;
-    private final int EDIT_ITEM = 1001;
-    private final int UPLOAD_WORK = 1002;
-    private final int LIST_SUBMISSIONS = 1003;
+    private static final int DELETE_ITEM = 1000;
+    private static final int EDIT_ITEM = 1001;
+    private static final int UPLOAD_WORK = 1002;
+    private static final int LIST_SUBMISSIONS = 1003;
 
     private Toolbar toolbar;
     private User user;

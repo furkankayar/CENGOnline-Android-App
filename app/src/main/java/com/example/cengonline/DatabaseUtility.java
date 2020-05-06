@@ -7,7 +7,6 @@ import com.example.cengonline.model.Conversation;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.CourseAssignments;
-import com.example.cengonline.model.EnrolledCourses;
 import com.example.cengonline.model.Message;
 import com.example.cengonline.model.MyTimestamp;
 import com.example.cengonline.model.User;
@@ -823,7 +822,7 @@ public class DatabaseUtility {
         });
     }
 
-    public void getConversationSingle(final User secondUser,final DatabaseCallback callback){
+    public void getConversations(final User secondUser,final DatabaseCallback callback){
 
         getCurrentUserWithAllInfo(new DatabaseCallback() {
             @Override

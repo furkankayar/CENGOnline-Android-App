@@ -14,7 +14,6 @@ import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.model.Course;
-import com.example.cengonline.post.Announcement;
 
 public class NewAnnouncementDialog extends Dialog implements View.OnClickListener {
 
@@ -53,7 +52,7 @@ public class NewAnnouncementDialog extends Dialog implements View.OnClickListene
         }
     }
 
-    public void postAnnouncement(){
+    private void postAnnouncement(){
 
         DatabaseUtility.getInstance().newCourseAnnouncement(this.course, this.announcementEditText.getText().toString(), new DatabaseCallback() {
             @Override
@@ -72,7 +71,7 @@ public class NewAnnouncementDialog extends Dialog implements View.OnClickListene
         });
     }
 
-    public void makeToastMessage(String message){
+    private void makeToastMessage(String message){
         Toast.makeText(this.activity, message, Toast.LENGTH_LONG).show();
     }
 }

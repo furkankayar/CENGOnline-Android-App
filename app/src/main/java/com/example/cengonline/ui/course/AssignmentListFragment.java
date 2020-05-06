@@ -49,8 +49,8 @@ import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 public class AssignmentListFragment extends AppCompatActivity implements View.OnClickListener {
 
-    private final int REFRESH_ITEM = 1000;
-    private final int DOWNLOAD_ALL = 1001;
+    private static final int REFRESH_ITEM = 1000;
+    private static final int DOWNLOAD_ALL = 1001;
 
     private Toolbar toolbar;
     private User user;
@@ -95,7 +95,7 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
         }
     }
 
-    public void printFileNames(final FileEntity fileEntity){
+    private void printFileNames(final FileEntity fileEntity){
 
         Utility util = Utility.getInstance();
         try{
@@ -135,9 +135,6 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
             ll.addView(tv, lp);
             ll.addView(tv2, lp2);
             ll.addView(tv3, lp3);
-
-
-
 
             LinearLayout outerLinearLayout = new LinearLayout(this);
             LinearLayout.LayoutParams outerLinearLayoutLayoutParams =  new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);

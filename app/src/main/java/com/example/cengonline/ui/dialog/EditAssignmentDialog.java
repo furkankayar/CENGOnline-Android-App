@@ -5,10 +5,8 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -18,16 +16,12 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
-
 import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.MyTimestamp;
-import com.example.cengonline.post.Announcement;
 import com.example.cengonline.post.Assignment;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -54,7 +48,7 @@ public class EditAssignmentDialog extends Dialog implements View.OnClickListener
         setContentView(R.layout.activity_edit_assignment);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+
     @Override
     public void onCreate(Bundle savedStateInstance) {
         this.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -99,7 +93,7 @@ public class EditAssignmentDialog extends Dialog implements View.OnClickListener
         }
     }
 
-    public void goToDatePicker(){
+    private void goToDatePicker(){
 
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -146,7 +140,7 @@ public class EditAssignmentDialog extends Dialog implements View.OnClickListener
         dpd.show();
     }
 
-    public void goToTimePicker(){
+    private void goToTimePicker(){
 
         int hour = 23;
         int minute = 59;
@@ -190,7 +184,7 @@ public class EditAssignmentDialog extends Dialog implements View.OnClickListener
         tpd.show();
     }
 
-    public void editAssignment(){
+    private void editAssignment(){
 
         String title = assignmentTitleEditText.getText().toString();
         String description = assignmentDescriptionEditText.getText().toString();
@@ -255,7 +249,7 @@ public class EditAssignmentDialog extends Dialog implements View.OnClickListener
         });
     }
 
-    public void makeToastMessage(String message){
+    private void makeToastMessage(String message){
         Toast.makeText(this.activity, message, Toast.LENGTH_LONG).show();
     }
 }

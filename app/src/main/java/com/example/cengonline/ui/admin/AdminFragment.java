@@ -1,18 +1,13 @@
 package com.example.cengonline.ui.admin;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import com.example.cengonline.R;
 import com.example.cengonline.Utility;
 import com.example.cengonline.model.User;
-import com.example.cengonline.ui.course.CourseFragment;
 import com.example.cengonline.ui.dialog.SetRoleDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,7 +27,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AdminFragment extends Fragment {

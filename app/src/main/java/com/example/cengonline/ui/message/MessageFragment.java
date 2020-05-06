@@ -21,13 +21,12 @@ import com.example.cengonline.R;
 import com.example.cengonline.Utility;
 import com.example.cengonline.model.Conversation;
 import com.example.cengonline.model.User;
-import com.example.cengonline.post.Announcement;
 import com.example.cengonline.ui.dialog.NewMessageDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -78,6 +77,7 @@ public class MessageFragment extends Fragment {
                     else{
                         linearLayout.setGravity(Gravity.TOP);
                     }
+                    Collections.sort(conversations);
                     for(Conversation conversation : conversations){
                         drawConversation(conversation);
                     }

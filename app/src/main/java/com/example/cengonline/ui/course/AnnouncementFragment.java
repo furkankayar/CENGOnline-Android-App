@@ -23,8 +23,8 @@ import com.example.cengonline.ui.dialog.EditAnnouncementDialog;
 
 public class AnnouncementFragment extends AppCompatActivity implements View.OnClickListener {
 
-    private final int DELETE_ITEM = 1000;
-    private final int EDIT_ITEM = 1001;
+    private static final int DELETE_ITEM = 1000;
+    private static final int EDIT_ITEM = 1001;
 
     private Toolbar toolbar;
     private User user;
@@ -61,7 +61,8 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
             this.profilTextView.setText(this.user.getDisplayName().toUpperCase().substring(0, 1));
             this.userTextView.setText(this.user.getDisplayName());
             if(this.announcement.getEditedAt() != null){
-                this.dateTextView.setText(this.announcement.getPostedAt().toString() + " (Edited " + this.announcement.getEditedAt().toString() + ")");
+                String str = this.announcement.getPostedAt().toString() + " (Edited " + this.announcement.getEditedAt().toString() + ")";
+                this.dateTextView.setText(str);
             }
             else{
                 this.dateTextView.setText(this.announcement.getPostedAt().toString());
@@ -201,10 +202,4 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
     private void makeToastMessage(String message){
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
-
-
-
-
-
-
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Conversation implements Serializable {
+public class Conversation implements Serializable, Comparable {
 
     private String key;
     private User sender;
@@ -52,5 +52,16 @@ public class Conversation implements Serializable {
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Conversation c2 = (Conversation)o;
+        if(this.getMessages().size() == 0 || c2.getMessages().size() == 0)
+            return 0;
+        if(this.getMessages().get(this.getMessages().size() - 1).getSentAt().before(c2.getMessages().get(c2.getMessages().size() - 1).getSentAt()))
+            return 1;
+        else
+            return -1;
     }
 }

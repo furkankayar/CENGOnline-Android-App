@@ -51,7 +51,7 @@ public class JoinClassDialog extends Dialog implements View.OnClickListener {
         }
     }
 
-    public void joinClass(){
+    private void joinClass(){
 
         String classCode = this.classCodeEditText.getText().toString();
         DatabaseUtility.getInstance().addStudentToCourse(classCode, new DatabaseCallback() {
@@ -70,7 +70,7 @@ public class JoinClassDialog extends Dialog implements View.OnClickListener {
         });
     }
 
-    public void makeToastMessage(String message){
+    private void makeToastMessage(String message){
         Toast.makeText(this.activity, message, Toast.LENGTH_LONG).show();
     }
 }

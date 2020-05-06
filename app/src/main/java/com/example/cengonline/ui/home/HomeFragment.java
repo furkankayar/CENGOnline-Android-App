@@ -2,31 +2,21 @@ package com.example.cengonline.ui.home;
 
 import android.content.Intent;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
@@ -35,9 +25,7 @@ import com.example.cengonline.Utility;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
 import com.example.cengonline.ui.course.CourseFragment;
-import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
 
 import java.util.List;
 

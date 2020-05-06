@@ -3,13 +3,11 @@ package com.example.cengonline;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cengonline.R;
 import com.example.cengonline.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 

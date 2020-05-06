@@ -16,7 +16,6 @@ import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.model.Conversation;
 import com.example.cengonline.model.User;
-import com.example.cengonline.ui.course.AnnouncementFragment;
 import com.example.cengonline.ui.message.SpecialMessageFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -71,7 +70,7 @@ public class NewMessageDialog extends Dialog implements View.OnClickListener {
             public void onSuccess(Object result) {
                 final User user = (User)result;
 
-                DatabaseUtility.getInstance().getConversationSingle(user, new DatabaseCallback() {
+                DatabaseUtility.getInstance().getConversations(user, new DatabaseCallback() {
                     @Override
                     public void onSuccess(Object result) {
 
@@ -112,7 +111,7 @@ public class NewMessageDialog extends Dialog implements View.OnClickListener {
         activity.startActivity(intent);
     }
 
-    public void makeToastMessage(String message){
+    private void makeToastMessage(String message){
         Toast.makeText(this.activity, message, Toast.LENGTH_LONG).show();
     }
 }

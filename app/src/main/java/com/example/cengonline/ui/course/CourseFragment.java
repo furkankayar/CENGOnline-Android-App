@@ -1,7 +1,5 @@
 package com.example.cengonline.ui.course;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +9,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -45,7 +42,8 @@ import java.util.List;
 
 public class CourseFragment extends AppCompatActivity implements View.OnClickListener, DatabaseCallback, BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private final int DELETE_ITEM = 1000;
+    private static final int DELETE_ITEM = 1000;
+
     private TextView courseName;
     private TextView courseSection;
     private TextView courseCode;

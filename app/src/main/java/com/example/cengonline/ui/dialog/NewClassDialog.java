@@ -1,11 +1,9 @@
 package com.example.cengonline.ui.dialog;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -16,15 +14,7 @@ import android.widget.Toast;
 import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
-import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
-import com.example.cengonline.post.Announcement;
-import com.example.cengonline.post.Assignment;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
 
 
 public class NewClassDialog extends Dialog implements View.OnClickListener {

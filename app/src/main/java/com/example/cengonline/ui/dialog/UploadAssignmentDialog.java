@@ -1,6 +1,5 @@
 package com.example.cengonline.ui.dialog;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,11 +8,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -27,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 
 import com.example.cengonline.DatabaseCallback;
@@ -38,19 +33,16 @@ import com.example.cengonline.model.Course;
 import com.example.cengonline.model.FileType;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Assignment;
-import com.example.cengonline.ui.course.AssignmentListFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.os.Environment.DIRECTORY_DOWNLOADS;
@@ -153,7 +145,7 @@ public class UploadAssignmentDialog extends Dialog implements View.OnClickListen
         this.activity.startActivityForResult(Intent.createChooser(intent, "Select PDF"), FileType.TXT.getValue());
     }
 
-    public void printFileNames(){
+    private void printFileNames(){
 
         Utility util = Utility.getInstance();
         this.fileNamesLinearLayout.removeAllViews();
@@ -394,7 +386,7 @@ public class UploadAssignmentDialog extends Dialog implements View.OnClickListen
         });
     }
 
-    public void makeToastMessage(String message){
+    private void makeToastMessage(String message){
         Toast.makeText(this.activity, message, Toast.LENGTH_LONG).show();
     }
 
