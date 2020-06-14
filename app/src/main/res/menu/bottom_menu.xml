@@ -4,6 +4,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/navigation_stream"
+            android:icon="@drawable/ic_stream"
+            android:title="Stream"/>
+        <item
             android:id="@+id/navigation_announcements"
             android:icon="@drawable/ic_announcement_svgrepo_com"
             android:title="Announcements" />

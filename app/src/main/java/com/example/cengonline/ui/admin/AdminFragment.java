@@ -109,7 +109,7 @@ public class AdminFragment extends Fragment {
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToSetRole(user);
+                goToSetRole(user.getKey());
             }
         });
 
@@ -118,8 +118,11 @@ public class AdminFragment extends Fragment {
         this.scrollLinearLayout.addView(cardView, cardViewLayoutParams);
     }
 
-    private void goToSetRole(User user){
-        if(user.getRoles().contains(User.Role.ADMIN)){
+    private void goToSetRole(String key){
+
+        User user = this.users.get(key);
+
+        if(user != null && user.getRoles().contains(User.Role.ADMIN)){
             makeToastMessage("You can't set role of admins!");
             return;
         }

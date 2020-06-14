@@ -107,6 +107,7 @@
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
                 android:orientation="vertical"
+                android:visibility="gone"
                 android:id="@+id/announcements_linear_layout">
 
                 <androidx.cardview.widget.CardView
@@ -189,12 +190,52 @@
                             android:layout_height="wrap_content"
                             android:text="Share new assignment."/>
                     </LinearLayout>
-
                 </androidx.cardview.widget.CardView>
-
-
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                android:id="@+id/stream_linear_layout">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    android:id="@+id/share_post_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="gone"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/share_post_image_text"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/rounded_textview"
+                            android:gravity="center"
+                            android:textColor="@android:color/white"
+                            android:textSize="22sp" />
+                        <TextView
+                            android:layout_marginLeft="20dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Share new post."/>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

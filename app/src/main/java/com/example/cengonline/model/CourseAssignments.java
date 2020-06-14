@@ -5,32 +5,25 @@ import com.example.cengonline.post.Assignment;
 import java.io.Serializable;
 import java.util.List;
 
-public class CourseAssignments implements Serializable {
-
-    private List<Assignment> assignments;
-    private String courseKey;
-    private String key;
-
+public class CourseAssignments extends CourseInformationStorage<Assignment> implements Serializable {
 
     public CourseAssignments(){
     }
 
-    public CourseAssignments(List<Assignment> announcements, String courseKey, String key) {
-        this.assignments = announcements;
-        this.courseKey = courseKey;
-        this.key = key;
+    public CourseAssignments(List<Assignment> assignments, String courseKey, String key) {
+        super(key, assignments, courseKey);
     }
 
     public List<Assignment> getAssignments() {
-        return assignments;
+        return this.dataList;
     }
 
     public void setAssignments(List<Assignment> assignments) {
-        this.assignments = assignments;
+        this.dataList = assignments;
     }
 
     public String getCourseKey() {
-        return courseKey;
+        return this.courseKey;
     }
 
     public void setCourseKey(String courseKey) {
@@ -38,7 +31,7 @@ public class CourseAssignments implements Serializable {
     }
 
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     public void setKey(String key) {

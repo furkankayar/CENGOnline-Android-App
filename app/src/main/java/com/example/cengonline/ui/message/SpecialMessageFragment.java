@@ -185,6 +185,7 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
         dateText.setText(message.getSentAt().toStringTime());
 
 
+
         LinearLayout middleLinearLayout = new LinearLayout(this);
         LinearLayout.LayoutParams middleLinarLayoutLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         middleLinarLayoutLayoutParams.topMargin = util.DPtoPX(10, this);
@@ -192,7 +193,7 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
 
         middleLinearLayout.setLayoutParams(middleLinarLayoutLayoutParams);
         middleLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        middleLinearLayout.setGravity(Gravity.CENTER);
+        middleLinearLayout.setGravity(Gravity.TOP);
 
 
 

@@ -49,6 +49,16 @@
 
         </activity>
         <activity
+            android:name=".ui.course.PostFragment"
+            android:theme="@style/MyMaterialTheme">
+
+        </activity>
+        <activity
+            android:name=".ui.course.CommentFragment"
+            android:theme="@style/MyMaterialTheme">
+
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/MyMaterialTheme">
@@ -57,10 +67,10 @@
         </activity>
         <activity
             android:name=".RegisterActivity"
-            android:theme="@style/AppTheme.MyNoActionBar" />
+            android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.MyNoActionBar">
+            android:theme="@style/MyMaterialTheme">
 
         </activity>
 

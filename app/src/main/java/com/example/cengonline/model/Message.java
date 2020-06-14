@@ -6,9 +6,9 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
 
-    private String senderKey;
-    private MyTimestamp sentAt;
-    private String body;
+    protected String senderKey;
+    protected MyTimestamp sentAt;
+    protected String body;
 
     public Message(){
 

@@ -3,15 +3,18 @@ package com.example.cengonline;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.cengonline.model.Comment;
 import com.example.cengonline.model.Conversation;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.CourseAssignments;
+import com.example.cengonline.model.CoursePosts;
 import com.example.cengonline.model.Message;
 import com.example.cengonline.model.MyTimestamp;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Announcement;
 import com.example.cengonline.post.Assignment;
+import com.example.cengonline.post.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -249,7 +252,6 @@ public class DatabaseUtility {
         });
     }
 
-
     public void getUserWithKey(final String key, final DatabaseCallback callback){
 
         Query user = FirebaseDatabase.getInstance().getReference().child("users").orderByChild("key").equalTo(key);
@@ -373,7 +375,6 @@ public class DatabaseUtility {
                                 }
                             }
                             else{
-
                                 DatabaseReference newVal = ref.push();
                                 Announcement announcement = new Announcement(user.getKey(), new MyTimestamp(new Date()), announcementBody);
                                 CourseAnnouncements announcements = new CourseAnnouncements(newVal.getKey(), Arrays.asList(announcement), course.getKey());
@@ -887,6 +888,281 @@ public class DatabaseUtility {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+    }
+
+    public void newCoursePost(final Course course, final String postBody, final DatabaseCallback callback){
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("coursePosts");
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                if(user.getRoles().contains(User.Role.TEACHER) && course.getTeacherList().contains(user.getKey())){
+                    Query query = ref.orderByChild("courseKey").equalTo(course.getKey());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                CoursePosts posts = null;
+                                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                    posts = ds.getValue(CoursePosts.class);
+                                }
+                                if(posts != null && posts.getPosts() != null){
+                                    Post post = new Post(user.getKey(), new MyTimestamp(new Date()), postBody);
+                                    posts.getPosts().add(post);
+                                    ref.child(posts.getKey()).setValue(posts);
+                                    callback.onSuccess("You have posted a new post!");
+                                }
+                                else{
+                                    callback.onFailed("An error occurred while posting a new post!");
+                                }
+                            }
+                            else{
+                                DatabaseReference newVal = ref.push();
+                                Post post = new Post(user.getKey(), new MyTimestamp(new Date()), postBody);
+                                CoursePosts posts = new CoursePosts(Arrays.asList(post), course.getKey(), newVal.getKey());
+                                newVal.setValue(posts);
+                                callback.onSuccess("You have posted a new post!");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            callback.onFailed("An error occurred while posting post!");
+                        }
+                    });
+                }
+                else{
+                    callback.onFailed("You are not authorized to post a new post!");
+                }
+            }
+
+            @Override
+            public void onFailed(String message) {
+
+            }
+        });
+    }
+
+    public void getCoursePosts(final Course course, final DatabaseCallback callback){
+
+        DatabaseReference announcementsRef = FirebaseDatabase.getInstance().getReference().child("coursePosts");
+        Query query = announcementsRef.orderByChild("courseKey").equalTo(course.getKey());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                CoursePosts cp = null;
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    cp = ds.getValue(CoursePosts.class);
+                }
+                if(cp != null && cp.getPosts() != null){
+                    callback.onSuccess(cp);
+                }
+                else{
+                    callback.onSuccess("Posts empty");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFailed("Error!");
+            }
+        });
+    }
+
+    public void deleteCoursePost(final Course course, final Post post, final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                final DatabaseReference coursePostsRef = FirebaseDatabase.getInstance().getReference().child("coursePosts");
+                Query query = coursePostsRef.orderByChild("courseKey").equalTo(course.getKey());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            CoursePosts coursePosts = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                coursePosts = ds.getValue(CoursePosts.class);
+                            }
+                            if(coursePosts != null && coursePosts.getPosts() != null){
+                                coursePosts.getPosts().remove(post);
+                                if(coursePosts.getPosts().isEmpty()){
+                                    coursePostsRef.child(coursePosts.getKey()).removeValue(new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                            callback.onSuccess("You deleted post successfully!");
+                                        }
+                                    });
+                                }
+                                else{
+                                    coursePostsRef.child(coursePosts.getKey()).setValue(coursePosts);
+                                    callback.onSuccess("You deleted post successfully!");
+                                }
+                            }
+                            else{
+                                callback.onFailed("Something went wrong!");
+                            }
+                        }
+                        else{
+                            callback.onFailed("Something went wrong!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("Something went wrong!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                callback.onFailed("Something went wrong!");
+            }
+        });
+    }
+
+    public void updateCoursePost(final Course course, final Post post, final String newBody, final DatabaseCallback callback){
+
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                final DatabaseReference coursePostsRef = FirebaseDatabase.getInstance().getReference().child("coursePosts");
+                Query query = coursePostsRef.orderByChild("courseKey").equalTo(course.getKey());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            CoursePosts coursePosts = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                coursePosts = ds.getValue(CoursePosts.class);
+                            }
+                            if(coursePosts != null && coursePosts.getPosts() != null){
+                                coursePosts.getPosts().remove(post);
+                                post.setBody(newBody);
+                                post.setEditedBy(user.getKey());
+                                post.setEditedAt(new MyTimestamp(new Date()));
+                                coursePosts.getPosts().add(post);
+                                coursePostsRef.child(coursePosts.getKey()).setValue(coursePosts);
+                                callback.onSuccess("You updated post successfully!");
+                            }
+                            else{
+                                callback.onFailed("Something went wrong!");
+                            }
+                        }
+                        else{
+                            callback.onFailed("Something went wrong!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("Something went wrong!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                callback.onFailed("Something went wrong!");
+            }
+        });
+    }
+
+    public void newComment(final Course course, final Post post, final Comment comment, final DatabaseCallback callback){
+
+        final DatabaseReference coursePostsRef = FirebaseDatabase.getInstance().getReference().child("coursePosts");
+        getCurrentUserWithAllInfo(new DatabaseCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                final User user = (User)result;
+                comment.setSenderKey(user.getKey());
+                comment.setSentAt(new MyTimestamp(new Date()));
+                Query query = coursePostsRef.orderByKey();
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            CoursePosts coursePosts = null;
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                coursePosts = ds.getValue(CoursePosts.class);
+                                if(coursePosts.getCourseKey().equals(course.getKey())){
+                                    break;
+                                }
+                                coursePosts = null;
+                            }
+                            if(coursePosts != null && coursePosts.getPosts() != null){
+                                for(Post p : coursePosts.getPosts()){
+                                    if(p.equals(post)){
+                                        if(p.getComments() == null){
+                                            p.setComments(new ArrayList<Comment>());
+                                        }
+                                        p.getComments().add(comment);
+                                        coursePostsRef.child(coursePosts.getKey()).setValue(coursePosts);
+                                        callback.onSuccess("Successful!");
+                                    }
+                                }
+                            }
+                            else{
+                                callback.onFailed("An error occurred while sending message!");
+                            }
+                        }
+                        else{
+                            callback.onFailed("An error occurred while sending message!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onFailed("An error occurred while sending message!");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                callback.onFailed("An error occurred while sending message!");
+            }
+        });
+
+    }
+
+    public void getComments(final Course course, final Post post, final DatabaseCallback callback){
+
+        final DatabaseReference coursePostsRef = FirebaseDatabase.getInstance().getReference().child("coursePosts");
+        Query query = coursePostsRef.orderByKey();
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                CoursePosts coursePosts = null;
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    coursePosts = ds.getValue(CoursePosts.class);
+                    if(coursePosts.getCourseKey().equals(course.getKey())){
+                        break;
+                    }
+                    coursePosts = null;
+                }
+                if(coursePosts != null && coursePosts.getPosts() != null){
+                    for(Post p : coursePosts.getPosts()){
+                        if(p.equals(post)){
+                            callback.onSuccess(p.getComments());
+                        }
+                    }
+                }
+                else{
+                    callback.onFailed("An error occurred while fetching comments!");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFailed("An error occurred while fetching comments!");
             }
         });
     }
