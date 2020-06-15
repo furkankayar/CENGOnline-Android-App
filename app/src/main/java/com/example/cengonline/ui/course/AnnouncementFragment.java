@@ -71,7 +71,7 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
 
 
 
-            DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+            DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
                 @Override
                 public void onSuccess(Object result) {
                     User user = (User)result;
@@ -169,7 +169,7 @@ public class AnnouncementFragment extends AppCompatActivity implements View.OnCl
 
     private void setMenuItems(final Menu menu){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;

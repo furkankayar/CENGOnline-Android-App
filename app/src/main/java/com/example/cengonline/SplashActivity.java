@@ -44,7 +44,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void setUserFromFirebaseUser(){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 user = (User)result;

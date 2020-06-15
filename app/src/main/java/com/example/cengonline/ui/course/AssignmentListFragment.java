@@ -224,7 +224,7 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
 
     private void getFiles(){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;

@@ -17,9 +17,7 @@ import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.User;
-import com.example.cengonline.post.Announcement;
 import com.example.cengonline.post.Post;
-import com.example.cengonline.ui.dialog.EditAnnouncementDialog;
 import com.example.cengonline.ui.dialog.EditPostDialog;
 
 
@@ -154,7 +152,7 @@ public class PostFragment extends AppCompatActivity implements View.OnClickListe
 
     private void setMenuItems(final Menu menu){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;

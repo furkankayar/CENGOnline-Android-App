@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
                     lineaScrollLayout.setGravity(Gravity.TOP);
                 }
                 for(final Course course : courses){
-                    DatabaseUtility.getInstance().getUserWithKey(course.getCreatedBy(), new DatabaseCallback() {
+                    DatabaseUtility.getInstance().getUser(course.getCreatedBy(), new DatabaseCallback() {
                         @Override
                         public void onSuccess(Object result) {
                             User user = (User)result;

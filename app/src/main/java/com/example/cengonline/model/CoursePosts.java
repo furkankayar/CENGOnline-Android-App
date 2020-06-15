@@ -5,8 +5,7 @@ import com.example.cengonline.post.Post;
 import java.io.Serializable;
 import java.util.List;
 
-public class CoursePosts extends CourseInformationStorage<Post> implements Serializable {
-
+public class CoursePosts extends CourseInformationStorage<Post>  {
 
 
     public CoursePosts(){
@@ -24,19 +23,4 @@ public class CoursePosts extends CourseInformationStorage<Post> implements Seria
         this.dataList = posts;
     }
 
-    public String getCourseKey() {
-        return this.courseKey;
-    }
-
-    public void setCourseKey(String courseKey) {
-        this.courseKey = courseKey;
-    }
-
-    public String getKey() {
-        return this.key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 }

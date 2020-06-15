@@ -70,7 +70,7 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
             this.assignmentDueDate.setText(this.assignment.getDueDate().toStringAssignmentDue());
 
 
-            DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+            DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
                 @Override
                 public void onSuccess(Object result) {
                     User user = (User)result;
@@ -187,7 +187,7 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
 
     private void setMenuItems(final Menu menu){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;

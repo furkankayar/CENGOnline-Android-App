@@ -72,7 +72,7 @@ public class NewClassDialog extends Dialog implements View.OnClickListener {
             @Override
             public void onSuccess(Object result) {
                 final String classCode = (String)result;
-                DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+                DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
                     @Override
                     public void onSuccess(Object result) {
                         User user = (User)result;

@@ -3,8 +3,6 @@ package com.example.cengonline.ui.course;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -25,7 +23,6 @@ import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.Utility;
-import com.example.cengonline.model.Comment;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.CourseAssignments;
@@ -35,6 +32,7 @@ import com.example.cengonline.post.AbstractPost;
 import com.example.cengonline.post.Announcement;
 import com.example.cengonline.post.Assignment;
 import com.example.cengonline.post.Post;
+import com.example.cengonline.ui.dialog.EditClassDialog;
 import com.example.cengonline.ui.dialog.NewAnnouncementDialog;
 import com.example.cengonline.ui.dialog.NewAssignmentDialog;
 import com.example.cengonline.ui.dialog.NewPostDialog;
@@ -49,6 +47,7 @@ import java.util.List;
 public class CourseFragment extends AppCompatActivity implements View.OnClickListener, DatabaseCallback, BottomNavigationView.OnNavigationItemSelectedListener {
 
     private static final int DELETE_ITEM = 1000;
+    private static final int EDIT_ITEM = 1001;
 
     private TextView courseName;
     private TextView courseSection;
@@ -118,7 +117,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
             this.toolbar.setTitle(this.course.getClassName());
 
 
-            DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+            DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
                 @Override
                 public void onSuccess(Object result) {
                     User user = (User)result;
@@ -242,18 +241,30 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
                         .setNegativeButton("No", dialogClickListener)
                         .show();
                 break;
+            case EDIT_ITEM:
+
+                EditClassDialog ecD = new EditClassDialog(this, this.course);
+                ecD.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        recreate();
+                    }
+                });
+                ecD.show();
+                break;
         }
         return true;
     }
 
     private void setMenuItems(final Menu menu){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;
                 if(course.getCreatedBy().equals(user.getKey())){
                     menu.add(0, DELETE_ITEM, 0, "Delete Course");
+                    menu.add(0, EDIT_ITEM, 1, "Edit Course");
                     menu.removeItem(R.id.course_options_unenroll);
                 }
             }
@@ -678,7 +689,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
             for(final Announcement an : ca.getAnnouncements()){
 
-                DatabaseUtility.getInstance().getUserWithKey(an.getPostedBy(), new DatabaseCallback() {
+                DatabaseUtility.getInstance().getUser(an.getPostedBy(), new DatabaseCallback() {
                     @Override
                     public void onSuccess(Object result) {
                         User user = (User)result;
@@ -703,7 +714,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
             for(final Assignment as : ca.getAssignments()){
 
-                DatabaseUtility.getInstance().getUserWithKey(as.getPostedBy(), new DatabaseCallback() {
+                DatabaseUtility.getInstance().getUser(as.getPostedBy(), new DatabaseCallback() {
                     @Override
                     public void onSuccess(Object result) {
                         User user = (User)result;
@@ -728,7 +739,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
             for(final Post po : cp.getPosts()){
 
-                DatabaseUtility.getInstance().getUserWithKey(po.getPostedBy(), new DatabaseCallback() {
+                DatabaseUtility.getInstance().getUser(po.getPostedBy(), new DatabaseCallback() {
                     @Override
                     public void onSuccess(Object result) {
                         User user = (User)result;

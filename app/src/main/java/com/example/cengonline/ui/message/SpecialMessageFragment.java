@@ -91,7 +91,7 @@ public class SpecialMessageFragment extends AppCompatActivity implements View.On
             else{
                 final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("conversations");
                 final DatabaseReference newVal = ref.push();
-                DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+                DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
                     @Override
                     public void onSuccess(Object result) {
                         User user = (User) result;

@@ -15,6 +15,7 @@ import com.example.cengonline.model.User;
 import com.example.cengonline.post.Announcement;
 import com.example.cengonline.post.Assignment;
 import com.example.cengonline.post.Post;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +40,7 @@ public class DatabaseUtility {
 
     }
 
-    public void getCurrentUserWithAllInfo(final DatabaseCallback callback){
+    public void getUser(final DatabaseCallback callback){
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -55,10 +56,28 @@ public class DatabaseUtility {
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 callback.onFailed("An error occurred try again please!");
+            }
+        });
+    }
+
+    public void getUser(final String key, final DatabaseCallback callback){
+
+        Query user = FirebaseDatabase.getInstance().getReference().child("users").orderByChild("key").equalTo(key);
+        user.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = null;
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    user = ds.getValue(User.class);
+                }
+                callback.onSuccess(user);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFailed("Error occurred while fetching user with given key: " + key);
             }
         });
     }
@@ -110,6 +129,19 @@ public class DatabaseUtility {
         newVal.setValue(course);
     }
 
+    public void updateCourse(Course course, final DatabaseCallback callback){
+
+        DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
+        Query query = courseRef.orderByKey().equalTo(course.getKey());
+        courseRef.child(course.getKey()).setValue(course).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                callback.onSuccess("Course updated successfully!");
+            }
+        });
+
+    }
+
     public void getCourseWithAllInfo(String classCode, final DatabaseCallback callback){
 
         final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
@@ -153,7 +185,7 @@ public class DatabaseUtility {
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         final String courseKey = ds.getKey();
                         final Course course = ds.getValue(Course.class);
-                        getCurrentUserWithAllInfo(new DatabaseCallback() {
+                        getUser(new DatabaseCallback() {
                             @Override
                             public void onSuccess(Object result) {
                                 final User student = (User) result;
@@ -217,7 +249,7 @@ public class DatabaseUtility {
 
         final DatabaseReference courseRef = FirebaseDatabase.getInstance().getReference().child("courses");
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User) result;
@@ -252,29 +284,9 @@ public class DatabaseUtility {
         });
     }
 
-    public void getUserWithKey(final String key, final DatabaseCallback callback){
-
-        Query user = FirebaseDatabase.getInstance().getReference().child("users").orderByChild("key").equalTo(key);
-        user.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = null;
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    user = ds.getValue(User.class);
-                }
-                callback.onSuccess(user);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.onFailed("Error occurred while fetching user with given key: " + key);
-            }
-        });
-    }
-
     public void removeStudentFromCourse(final Course course, final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -314,7 +326,7 @@ public class DatabaseUtility {
 
     public void removeCourse(final Course course, final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User) result;
@@ -350,7 +362,7 @@ public class DatabaseUtility {
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("courseAnnouncements");
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -429,7 +441,7 @@ public class DatabaseUtility {
 
     public void deleteCourseAnnouncement(final Course course, final Announcement announcement, final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -483,7 +495,7 @@ public class DatabaseUtility {
 
     public void updateCourseAnnouncement(final Course course, final Announcement announcement, final String newBody, final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -533,7 +545,7 @@ public class DatabaseUtility {
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("courseAssignments");
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -611,7 +623,7 @@ public class DatabaseUtility {
 
     public void updateCourseAssignments(final Course course, final Assignment assignment, final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -658,7 +670,7 @@ public class DatabaseUtility {
 
     public void deleteCourseAssignment(final Course course, final Assignment assignment, final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -739,7 +751,7 @@ public class DatabaseUtility {
     public void newMessage(final String conversationKey, final Message message, final DatabaseCallback callback){
 
         final DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference().child("conversations");
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -790,7 +802,7 @@ public class DatabaseUtility {
 
     public void getConversations(final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -825,7 +837,7 @@ public class DatabaseUtility {
 
     public void getConversations(final User secondUser,final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -896,7 +908,7 @@ public class DatabaseUtility {
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("coursePosts");
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -975,7 +987,7 @@ public class DatabaseUtility {
 
     public void deleteCoursePost(final Course course, final Post post, final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -1029,7 +1041,7 @@ public class DatabaseUtility {
 
     public void updateCoursePost(final Course course, final Post post, final String newBody, final DatabaseCallback callback){
 
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;
@@ -1078,7 +1090,7 @@ public class DatabaseUtility {
     public void newComment(final Course course, final Post post, final Comment comment, final DatabaseCallback callback){
 
         final DatabaseReference coursePostsRef = FirebaseDatabase.getInstance().getReference().child("coursePosts");
-        getCurrentUserWithAllInfo(new DatabaseCallback() {
+        getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 final User user = (User)result;

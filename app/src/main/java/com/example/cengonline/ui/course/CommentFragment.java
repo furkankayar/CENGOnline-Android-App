@@ -19,21 +19,14 @@ import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.Utility;
 import com.example.cengonline.model.Comment;
-import com.example.cengonline.model.Conversation;
 import com.example.cengonline.model.Course;
-import com.example.cengonline.model.Message;
 import com.example.cengonline.model.User;
 import com.example.cengonline.post.Post;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 
@@ -243,7 +236,7 @@ public class CommentFragment extends AppCompatActivity implements View.OnClickLi
                 linearLayout.removeAllViews();
                 commentCache.clear();
                 for(final Comment comment : comments){
-                    DatabaseUtility.getInstance().getUserWithKey(comment.getSenderKey(), new DatabaseCallback() {
+                    DatabaseUtility.getInstance().getUser(comment.getSenderKey(), new DatabaseCallback() {
                         @Override
                         public void onSuccess(Object result) {
                             User user = (User)result;

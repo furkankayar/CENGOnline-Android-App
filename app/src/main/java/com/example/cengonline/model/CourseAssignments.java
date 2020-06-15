@@ -5,7 +5,7 @@ import com.example.cengonline.post.Assignment;
 import java.io.Serializable;
 import java.util.List;
 
-public class CourseAssignments extends CourseInformationStorage<Assignment> implements Serializable {
+public class CourseAssignments extends CourseInformationStorage<Assignment> {
 
     public CourseAssignments(){
     }
@@ -22,19 +22,5 @@ public class CourseAssignments extends CourseInformationStorage<Assignment> impl
         this.dataList = assignments;
     }
 
-    public String getCourseKey() {
-        return this.courseKey;
-    }
 
-    public void setCourseKey(String courseKey) {
-        this.courseKey = courseKey;
-    }
-
-    public String getKey() {
-        return this.key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 }

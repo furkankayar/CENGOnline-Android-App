@@ -247,7 +247,7 @@ public class UploadAssignmentDialog extends Dialog implements View.OnClickListen
 
     private void uploadFile(final File file){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;
@@ -283,7 +283,7 @@ public class UploadAssignmentDialog extends Dialog implements View.OnClickListen
 
     private void deleteFile(final File file){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;
@@ -361,7 +361,7 @@ public class UploadAssignmentDialog extends Dialog implements View.OnClickListen
 
     private void getFiles(){
 
-        DatabaseUtility.getInstance().getCurrentUserWithAllInfo(new DatabaseCallback() {
+        DatabaseUtility.getInstance().getUser(new DatabaseCallback() {
             @Override
             public void onSuccess(Object result) {
                 User user = (User)result;
