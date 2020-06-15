@@ -214,7 +214,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
                     }
                 };
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Are you sure?")
+                builder.setMessage("You will be unenrolled from" + course.getClassName() + ". Are you sure?")
                         .setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener)
                         .show();
@@ -236,7 +236,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
                     }
                 };
                 builder = new AlertDialog.Builder(this);
-                builder.setMessage("Are you sure?")
+                builder.setMessage(course.getClassName() + " will be deleted. Are you sure?")
                         .setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener)
                         .show();

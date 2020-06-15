@@ -143,7 +143,7 @@ public class AssignmentFragment extends AppCompatActivity implements View.OnClic
                     }
                 };
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Are you sure?")
+                builder.setMessage(assignment.getTitle() + " will be deleted. Are you sure?")
                         .setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener)
                         .show();

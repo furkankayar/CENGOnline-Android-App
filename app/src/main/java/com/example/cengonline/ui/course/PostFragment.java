@@ -125,7 +125,7 @@ public class PostFragment extends AppCompatActivity implements View.OnClickListe
                     }
                 };
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Are you sure?")
+                builder.setMessage("Post will be deleted. Are you sure?")
                         .setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener)
                         .show();

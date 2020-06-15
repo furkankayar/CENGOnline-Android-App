@@ -73,6 +73,8 @@ public class AssignmentListFragment extends AppCompatActivity implements View.On
         this.progressDialog = new ProgressDialog(this);
         this.files = new ArrayList<FileEntity>();
 
+        this.toolbar.setTitle("Submissions");
+
         setSupportActionBar(this.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
