@@ -23,6 +23,7 @@ import com.example.cengonline.DatabaseCallback;
 import com.example.cengonline.DatabaseUtility;
 import com.example.cengonline.R;
 import com.example.cengonline.Utility;
+import com.example.cengonline.adt.SortedList;
 import com.example.cengonline.model.Course;
 import com.example.cengonline.model.CourseAnnouncements;
 import com.example.cengonline.model.CourseAssignments;
@@ -81,9 +82,9 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         this.announcementCards = new ArrayList<CardView>();
         this.assignmentCards = new ArrayList<CardView>();
         this.postCards = new ArrayList<CardView>();
-        this.announcementCardModels = new ArrayList<CardModel>();
-        this.assignmentCardModels = new ArrayList<CardModel>();
-        this.postCardModels = new ArrayList<CardModel>();
+        this.announcementCardModels = new SortedList<CardModel>();
+        this.assignmentCardModels = new SortedList<CardModel>();
+        this.postCardModels = new SortedList<CardModel>();
         this.courseName = findViewById(R.id.course_fragment_course_name);
         this.courseSection = findViewById(R.id.course_fragment_course_section);
         this.courseImage = findViewById(R.id.course_fragment_course_image);
@@ -653,8 +654,6 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
     private void printAnnouncementCardModels(){
 
-        Collections.sort(announcementCardModels);
-
         for(CardModel cm : this.announcementCardModels){
             createAnnouncementCard(cm);
         }
@@ -662,16 +661,12 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
 
     private void printAssignmentCardModels(){
 
-        Collections.sort(assignmentCardModels);
-
         for(CardModel cm : this.assignmentCardModels){
             createAssignmentCard(cm);
         }
     }
 
     private void printPostCardModels(){
-
-        Collections.sort(postCardModels);
 
         for(CardModel cm : this.postCardModels){
             createPostCard(cm);
@@ -685,7 +680,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         if(result.getClass() == CourseAnnouncements.class){
             CourseAnnouncements ca = (CourseAnnouncements)result;
 
-            this.announcementCardModels = new ArrayList<CardModel>();
+            this.announcementCardModels = new SortedList<CardModel>();
 
             for(final Announcement an : ca.getAnnouncements()){
 
@@ -710,7 +705,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         else if(result.getClass() == CourseAssignments.class){
             CourseAssignments ca = (CourseAssignments)result;
 
-            this.assignmentCardModels = new ArrayList<CardModel>();
+            this.assignmentCardModels = new SortedList<CardModel>();
 
             for(final Assignment as : ca.getAssignments()){
 
@@ -735,7 +730,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
         else if(result.getClass() == CoursePosts.class){
             CoursePosts cp = (CoursePosts)result;
 
-            this.postCardModels = new ArrayList<CardModel>();
+            this.postCardModels = new SortedList<CardModel>();
 
             for(final Post po : cp.getPosts()){
 
@@ -761,21 +756,21 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
             for(CardView cv : announcementCards){
                 announcementsLinearLayout.removeView(cv);
             }
-            announcementCardModels = new ArrayList<CardModel>();
+            announcementCardModels = new SortedList<CardModel>();
             printAnnouncementCardModels();
         }
         else if(result.getClass() == java.lang.String.class && ((String)result).equals("Assignments empty")){
             for(CardView cv : assignmentCards){
                 assignmentsLinearLayout.removeView(cv);
             }
-            assignmentCardModels =  new ArrayList<CardModel>();
+            assignmentCardModels =  new SortedList<CardModel>();
             printAssignmentCardModels();
         }
         else if(result.getClass() == java.lang.String.class && ((String)result).equals("Posts empty")){
             for(CardView cv : postCards){
                 streamLinearLayout.removeView(cv);
             }
-            postCardModels = new ArrayList<CardModel>();
+            postCardModels = new SortedList<CardModel>();
             printPostCardModels();
         }
     }
@@ -814,7 +809,7 @@ public class CourseFragment extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    private class CardModel implements Comparable{
+    public class CardModel implements Comparable{
         private AbstractPost post;
         private User user;
 
